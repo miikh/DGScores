@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, Courses.class);
                 MainActivity.this.startActivity(i);
+                int x = 0;
             }
         });
     }
