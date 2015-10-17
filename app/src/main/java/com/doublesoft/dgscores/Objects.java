@@ -1,5 +1,7 @@
 package com.doublesoft.dgscores;
 
+import java.util.Date;
+
 /** Käytettävät oliot:
  *
  * Hole, Course, Player
@@ -8,7 +10,7 @@ package com.doublesoft.dgscores;
  */
 public class Objects {
 
-    class Hole {
+    public class Hole {
         int par;
         int distance;
 
@@ -34,7 +36,7 @@ public class Objects {
         }
     }
 
-    class Course {
+    public class Course {
         String name;
         int hole_count;
         Hole[] holes;
@@ -68,7 +70,7 @@ public class Objects {
         }
     }
 
-    class Player {
+    public class Player {
         String name;
 
         public Player() {}
@@ -84,6 +86,23 @@ public class Objects {
         public void setName(String name) {
             this.name = name;
         }
+
     }
+
+    public class Round {
+        Course course;
+        Player[] players;
+        Date date;
+        int[][] results;
+
+        public Round(Course course, Player[] players){
+            this.course = course;
+            this.players = players;
+            this.results = new int[players.length][course.getHole_count()];
+            this.date = new Date();
+        }
+    }
+
+
 
 }
