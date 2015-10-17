@@ -13,10 +13,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn1 = (Button) findViewById(R.id.button1);
-        Button btn2 = (Button) findViewById(R.id.button2);
+        Button btnPlay = (Button) findViewById(R.id.button_play);
+        Button btnEditCourses = (Button) findViewById(R.id.button_edit_courses_);
+        Button btnSettings = (Button) findViewById(R.id.button_settings);
+        Button btnEditPlayers = (Button) findViewById(R.id.button_edit_players);
+        Button btnScorecards = (Button) findViewById(R.id.button_scorecards);
+        Button btnStatistics = (Button) findViewById(R.id.button_statistics);
 
-        btn1.setOnClickListener(new View.OnClickListener() {
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, Play_course.class);
+                MainActivity.this.startActivity(i);
+            }
+        });
+
+        btnEditCourses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, Courses.class);
@@ -24,10 +36,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn2.setOnClickListener(new View.OnClickListener() {
+        btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, Courses.class);
+                Intent i = new Intent(MainActivity.this, Settings.class);
+                MainActivity.this.startActivity(i);
+            }
+        });
+
+        btnEditPlayers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, Players.class);
+                MainActivity.this.startActivity(i);
+            }
+        });
+
+        btnScorecards.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, Scorecards.class);
+                MainActivity.this.startActivity(i);
+            }
+        });
+
+        btnStatistics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, Statistics.class);
                 MainActivity.this.startActivity(i);
             }
         });
