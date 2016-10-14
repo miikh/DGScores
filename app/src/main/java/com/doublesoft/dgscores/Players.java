@@ -1,6 +1,5 @@
 package com.doublesoft.dgscores;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +20,7 @@ public class Players extends AppCompatActivity {
         btnAdd_player.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Players.this, Add_player.class);
+                Intent i = new Intent(Players.this, AddPlayer.class);
                 Players.this.startActivity(i);
             }
         });
