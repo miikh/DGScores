@@ -34,33 +34,44 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".Scorecards"
+        <activity
+            android:name=".Scorecards"
             android:label="@string/title_activity_scorecards"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".Settings"
+        <activity
+            android:name=".Settings"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".Statistics"
+        <activity
+            android:name=".Statistics"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".Play_course"
+        <activity
+            android:name=".PlayCourse"
             android:label="@string/title_activity_play_course"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".AddPlayer"
+            android:label="@string/players_activity_add_player"
+            android:parentActivityName=".Players" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Players" />
         </activity>
     </application>
 
