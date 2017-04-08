@@ -6,40 +6,64 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class PlayersActivity extends AppCompatActivity {
 
     Context context;
+    Cursor players;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_players);
-        context = getApplicationContext();
+        context = this;
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final DatabaseAdapter db = new DatabaseAdapter(context);
         db.open();
 
-        Cursor players = db.getPlayers();
+        players = db.getPlayers();
+
+        ListView listView = (ListView) findViewById(R.id.players_listview);
+
         final TextView testView = (TextView) findViewById(R.id.textView);
 
         players.moveToFirst();
         testView.append(Integer.toString(players.getCount()) + "\n");
+        /*
         for(int i=0;i<players.getCount();i++){
             testView.append(players.getString(players.getColumnIndex("NAME")) + "\n");
             players.moveToNext();
-        }
+        }*/
 
-        Button btnAdd_player = (Button) findViewById(R.id.btnAdd_player);
+        players.moveToFirst();
+        final SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_1, players, new String[]{"NAME"}, new int[]{android.R.id.text1}, 0);
+        listView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = ((TextView) view).getText().toString();
+                Toast.makeText(context, "Katso pelaajan " + name + " statistiikka", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        FloatingActionButton btnAdd_player = (FloatingActionButton) findViewById(R.id.btnAddPlayer);
 
         btnAdd_player.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +83,9 @@ public class PlayersActivity extends AppCompatActivity {
                                     ContentValues cv = new ContentValues();
                                     cv.put("name", name);
                                     db.insertPlayers(cv);
-                                    testView.append(name + "\n");
+                                    //testView.append(name + "\n");
+                                    players = db.getPlayers();
+                                    adapter.swapCursor(players);
                                     Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
                                 }
                                 //else { t.setError("Set player name"); }
@@ -75,10 +101,6 @@ public class PlayersActivity extends AppCompatActivity {
 
                 dialog.show();
 
-                /*
-                Intent i = new Intent(PlayersActivity.this, AddPlayer.class);
-                PlayersActivity.this.startActivity(i);
-                */
             }
         });
     }
