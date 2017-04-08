@@ -1,9 +1,10 @@
 package com.doublesoft.dgscores;
 
-import android.support.v4.app.NavUtils;
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.view.View;
 
 public class CoursesActivity extends AppCompatActivity {
 
@@ -13,16 +14,17 @@ public class CoursesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_courses);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        FloatingActionButton btnAddCourse = (FloatingActionButton) findViewById(R.id.btnAddCourse);
+
+        btnAddCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(CoursesActivity.this, AddCourseActivity.class);
+                CoursesActivity.this.startActivity(i);
+            }
+        });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+
 }

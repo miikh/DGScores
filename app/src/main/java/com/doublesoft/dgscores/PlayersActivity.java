@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -39,9 +40,9 @@ public class PlayersActivity extends AppCompatActivity {
             players.moveToNext();
         }
 
-        Button btnAdd_player = (Button) findViewById(R.id.btnAdd_player);
+        FloatingActionButton btnAddPlayer = (FloatingActionButton) findViewById(R.id.btnAddPlayer);
 
-        btnAdd_player.setOnClickListener(new View.OnClickListener() {
+        btnAddPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -74,11 +75,6 @@ public class PlayersActivity extends AppCompatActivity {
                 .create();
 
                 dialog.show();
-
-                /*
-                Intent i = new Intent(PlayersActivity.this, AddPlayer.class);
-                PlayersActivity.this.startActivity(i);
-                */
             }
         });
     }
