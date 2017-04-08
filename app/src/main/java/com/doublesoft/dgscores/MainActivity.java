@@ -22,11 +22,9 @@ public class MainActivity extends AppCompatActivity {
         db.open();
 
         Button btnPlay = (Button) findViewById(R.id.button_play);
-        Button btnEditCourses = (Button) findViewById(R.id.button_edit_courses_);
-        Button btnSettings = (Button) findViewById(R.id.button_settings);
-        Button btnEditPlayers = (Button) findViewById(R.id.button_edit_players);
+        Button btnEditCourses = (Button) findViewById(R.id.button_courses);
+        Button btnEditPlayers = (Button) findViewById(R.id.button_players);
         Button btnScorecards = (Button) findViewById(R.id.button_scorecards);
-        Button btnStatistics = (Button) findViewById(R.id.button_statistics);
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,13 +42,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-                MainActivity.this.startActivity(i);
-            }
-        });
 
         btnEditPlayers.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,14 +59,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnStatistics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, StatisticsActivity.class);
-                MainActivity.this.startActivity(i);
-                ;
-            }
-        });
     }
 
 
