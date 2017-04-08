@@ -4,21 +4,25 @@ import java.util.Date;
 
 /** Käytettävät oliot:
  *
- * Hole, Course, Player
+ * Fairway, Course, Player
  *
  * Created by yone on 9.10.2015.
  */
 public class Objects {
 
-    public class Hole {
+    public class Fairway {
+        int id;
         int par;
         int distance;
+        String name;
 
-        public Hole () {}
+        public Fairway() {}
 
-        public Hole (int par, int distance){
+        public Fairway(int id, int par, int distance, String name){
+            this.id = id;
             this.par = par;
             this.distance = distance;
+            this.name = name;
         }
 
         public int getDistance() {
@@ -37,35 +41,39 @@ public class Objects {
     }
 
     public class Course {
+        int id;
         String name;
-        int hole_count;
-        Hole[] holes;
+        int holeCount;
+        int par;
+        Fairway[] holes;
 
         public Course () {}
 
-        public Course(String name, int hole_count){
+        public Course(String name, int holeCount, int par){
             this.name = name;
-            this.hole_count = hole_count;
-            this.holes = new Hole[hole_count];
+            this.holeCount = holeCount;
+            this.par = par;
+            this.holes = new Fairway[holeCount];
         }
 
         public String getName() {
             return name;
         }
-        public int getHole_count() {
-            return hole_count;
+        public int getHoleCount() {
+            return holeCount;
         }
-        public Hole[] getHoles() {
+        public int getPar(){return par;}
+        public Fairway[] getHoles() {
             return holes;
         }
 
         public void setName(String name) {
             this.name = name;
         }
-        public void setHole_count(int hole_count) {
-            this.hole_count = hole_count;
+        public void setHoleCount(int holeCount) {
+            this.holeCount = holeCount;
         }
-        public void setHoles(Hole[] holes) {
+        public void setHoles(Fairway[] holes) {
             this.holes = holes;
         }
     }
@@ -98,7 +106,7 @@ public class Objects {
         public Round(Course course, Player[] players){
             this.course = course;
             this.players = players;
-            this.results = new int[players.length][course.getHole_count()];
+            this.results = new int[players.length][course.getHoleCount()];
             this.date = new Date();
         }
     }
