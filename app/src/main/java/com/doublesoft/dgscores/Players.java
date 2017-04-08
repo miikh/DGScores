@@ -15,9 +15,9 @@ public class Players extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Button btnAdd_player = (Button) findViewById(R.id.btnAdd_player);
+        Button btnAddPlayer = (Button) findViewById(R.id.btnAddPlayer);
 
-        btnAdd_player.setOnClickListener(new View.OnClickListener() {
+        btnAddPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Players.this, AddPlayer.class);
