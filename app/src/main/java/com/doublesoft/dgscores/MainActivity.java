@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         context = getApplicationContext();
         db = new DatabaseAdapter(context);
-        db.open();
+        //db.open();
 
         Button btnPlay = (Button) findViewById(R.id.button_play);
         Button btnEditCourses = (Button) findViewById(R.id.button_courses);
@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         btnEditPlayers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, Players.class);
+                Intent i = new Intent(MainActivity.this, PlayersActivity.class);
+
                 MainActivity.this.startActivity(i);
             }
         });

@@ -2,6 +2,7 @@ package com.doublesoft.dgscores;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -37,6 +38,10 @@ public class DatabaseAdapter {
 
     public void insertPlayers(ContentValues name){
         db.insert(TABLE_PLAYERS, null, name);
+    }
+
+    public Cursor getPlayers(){
+        return db.rawQuery("SELECT * FROM PLAYERS", null);
     }
 
     static class DBOpenHelper extends SQLiteOpenHelper{

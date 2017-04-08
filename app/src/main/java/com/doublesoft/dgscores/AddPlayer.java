@@ -21,14 +21,14 @@ public class AddPlayer extends AppCompatActivity {
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(AddPlayer.this, Players.class);
+                Intent i = new Intent(AddPlayer.this, PlayersActivity.class);
                 AddPlayer.this.startActivity(i);
             }
         });
 
         cancel_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent i = new Intent(AddPlayer.this, Players.class);
+                Intent i = new Intent(AddPlayer.this, PlayersActivity.class);
                 AddPlayer.this.startActivity(i);
             }
         });

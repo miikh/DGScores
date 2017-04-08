@@ -27,7 +27,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".Players"
+            android:name=".PlayersActivity"
             android:label="@string/title_activity_players"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -68,10 +68,10 @@
         </activity>
         <activity android:name=".AddPlayer"
             android:label="@string/players_activity_add_player"
-            android:parentActivityName=".Players" >
+            android:parentActivityName=".PlayersActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Players" />
+                android:value=".PlayersActivity" />
         </activity>
     </application>
 
