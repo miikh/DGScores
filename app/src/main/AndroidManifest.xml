@@ -66,13 +66,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".AddPlayer"
-            android:label="@string/players_activity_add_player"
-            android:parentActivityName=".Players" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Players" />
-        </activity>
     </application>
 
 </manifest>
