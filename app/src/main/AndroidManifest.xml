@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Courses"
+            android:name=".CoursesActivity"
             android:label="@string/title_activity_courses"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -35,7 +35,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".Scorecards"
+            android:name=".ScorecardsActivity"
             android:label="@string/title_activity_scorecards"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -43,7 +43,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".Settings"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -51,15 +51,15 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".Statistics"
-            android:label="@string/title_activity_settings"
+            android:name=".StatisticsActivity"
+            android:label="@string/title_activity_statistics"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".PlayCourse"
+            android:name=".PlayCourseActivity"
             android:label="@string/title_activity_play_course"
             android:parentActivityName=".MainActivity" >
             <meta-data
