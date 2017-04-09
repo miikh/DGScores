@@ -63,9 +63,9 @@ public class PlayersActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton btnAdd_player = (FloatingActionButton) findViewById(R.id.btnAddPlayer);
+        FloatingActionButton btnAddPlayer = (FloatingActionButton) findViewById(R.id.btnAddPlayer);
 
-        btnAdd_player.setOnClickListener(new View.OnClickListener() {
+        btnAddPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
