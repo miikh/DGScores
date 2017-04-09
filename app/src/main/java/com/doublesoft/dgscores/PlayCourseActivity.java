@@ -23,10 +23,15 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class PlayCourseActivity extends AppCompatActivity {
 
     Context context;
+    DatabaseAdapter db;
+    SimpleCursorAdapter adapter;
     Cursor players;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +41,15 @@ public class PlayCourseActivity extends AppCompatActivity {
         context = this;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final DatabaseAdapter db = new DatabaseAdapter(context);
+        db = new DatabaseAdapter(context);
         db.open();
 
         players = db.getPlayers();
         players.moveToFirst();
 
-        final ListView listView = (ListView) findViewById(R.id.choose_players_listview);
+        listView = (ListView) findViewById(R.id.choose_players_listview);
 
-        final SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_checked, players, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
+        adapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_checked, players, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -63,40 +68,56 @@ public class PlayCourseActivity extends AppCompatActivity {
         addPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setAddPlayer();
+            }
+        });
 
-                final EditText t = new EditText(context);
-                t.setHint("Name");
-                AlertDialog dialog = new AlertDialog.Builder(context)
-                        .setTitle("Add Player")
-                        .setIcon(android.R.drawable.ic_input_add)
-                        .setView(t)
-                        .setPositiveButton("Add Player", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String name = t.getText().toString().trim();
-                                if(name.length() > 0 ) {
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("name", name);
-                                    db.insertPlayers(cv);
-                                    players = db.getPlayers();
-                                    adapter.swapCursor(players);
-                                    //Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
-                                }
-                                //else { t.setError("Set player name"); }
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .create();
-
-                dialog.show();
+        FloatingActionButton chooseCourse = (FloatingActionButton) findViewById(R.id.btnChooseCourse);
+        chooseCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setChooseCourse();
             }
         });
 
     }
 
+    private void setAddPlayer(){
+        final EditText t = new EditText(context);
+        t.setHint("Name");
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("Add Player")
+                .setIcon(android.R.drawable.ic_input_add)
+                .setView(t)
+                .setPositiveButton("Add Player", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String name = t.getText().toString().trim();
+                        if(name.length() > 0 ) {
+                            ContentValues cv = new ContentValues();
+                            cv.put("name", name);
+                            db.insertPlayers(cv);
+                            players = db.getPlayers();
+                            adapter.swapCursor(players);
+                            //Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
+                        }
+                        //else { t.setError("Set player name"); }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create();
+
+        dialog.show();
+    }
+
+    private void setChooseCourse(){
+        ArrayList<CheckedTextView> playerList = new ArrayList();
+        Cursor c = adapter.getCursor();
+        c.moveToFirst();
+    }
 }
