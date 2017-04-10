@@ -43,7 +43,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".PlayCourseActivity"
+            android:name=".StartCourseActivity"
             android:label="@string/title_activity_play_course"
             android:parentActivityName=".MainActivity">
             <meta-data

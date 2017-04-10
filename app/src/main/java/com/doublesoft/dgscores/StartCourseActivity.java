@@ -3,6 +3,7 @@ package com.doublesoft.dgscores;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -24,13 +25,15 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class PlayCourseActivity extends AppCompatActivity {
+public class StartCourseActivity extends AppCompatActivity {
 
     Context context;
     DatabaseAdapter db;
     SimpleCursorAdapter adapter;
-    Cursor players;
+    CustomCursorAdapter adapterC;
+    Cursor playersCursor;
     ListView listView;
 
     @Override
@@ -44,17 +47,23 @@ public class PlayCourseActivity extends AppCompatActivity {
         db = new DatabaseAdapter(context);
         db.open();
 
-        players = db.getPlayers();
-        players.moveToFirst();
+        playersCursor = db.getPlayers();
+        playersCursor.moveToFirst();
 
         listView = (ListView) findViewById(R.id.choose_players_listview);
 
-        adapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_checked, players, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
+        adapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_checked, playersCursor, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
+
+        adapterC = new CustomCursorAdapter(context, android.R.layout.simple_list_item_checked, playersCursor, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CheckedTextView cb = ((CheckedTextView)view);
+                if(!adapterC.players.contains(cb.getText().toString())){
+                    adapterC.players.add(cb.getText().toString());
+                }
+                else {adapterC.players.remove(cb.getText().toString());}
                 if(!cb.isChecked()){
                     cb.setChecked(true);
                 }
@@ -62,7 +71,7 @@ public class PlayCourseActivity extends AppCompatActivity {
             }
         });
 
-        listView.setAdapter(adapter);
+        listView.setAdapter(adapterC);
 
         FloatingActionButton addPlayer = (FloatingActionButton) findViewById(R.id.btnAddPlayerPlayCourse);
         addPlayer.setOnClickListener(new View.OnClickListener() {
@@ -97,8 +106,8 @@ public class PlayCourseActivity extends AppCompatActivity {
                             ContentValues cv = new ContentValues();
                             cv.put("name", name);
                             db.insertPlayers(cv);
-                            players = db.getPlayers();
-                            adapter.swapCursor(players);
+                            playersCursor = db.getPlayers();
+                            adapterC.swapCursor(playersCursor);
                             //Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
                         }
                         //else { t.setError("Set player name"); }
@@ -116,8 +125,36 @@ public class PlayCourseActivity extends AppCompatActivity {
     }
 
     private void setChooseCourse(){
-        ArrayList<CheckedTextView> playerList = new ArrayList();
-        Cursor c = adapter.getCursor();
-        c.moveToFirst();
+        if(adapterC.players.size() > 0){
+            Intent i = new Intent();
+            i.putExtra("players", adapterC.players);
+        }
+        else {Toast.makeText(context, "Choose players first!", Toast.LENGTH_LONG).show();}
+
+    }
+
+    private class CustomCursorAdapter extends SimpleCursorAdapter{
+
+        ArrayList<String> players;
+
+        CustomCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
+            players = new ArrayList<>();
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+
+            CheckedTextView v = (CheckedTextView) view;
+
+            if(players.contains(v.getText().toString())){
+                v.setChecked(true);
+            }
+            else{
+                v.setChecked(false);
+            }
+
+        }
     }
 }
