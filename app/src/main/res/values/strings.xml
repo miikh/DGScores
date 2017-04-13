@@ -9,5 +9,5 @@
     <string name="title_activity_add_course">Add course</string>
     <string name="course_name">Course name</string>
     <string name="save_course">Save course</string>
-    <string name="number_of_holes">Number of holes</string>
+    <string name="holes">Holes</string>
 </resources>

@@ -14,6 +14,8 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
     NumberPicker holeNumberPicker;
     TableLayout holeTable;
     TableLayout.LayoutParams x = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+    int defaultHoleCount = 18;
+    int prevCount = defaultHoleCount;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,12 +24,14 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         holeNumberPicker = (NumberPicker) findViewById(R.id.holeNumberPicker);
         holeTable = (TableLayout) findViewById(R.id.holeTable);
 
-        int defaultHoleCount = 18;
         holeNumberPicker.setMinValue(1);
         holeNumberPicker.setMaxValue(50);
+        holeNumberPicker.setWrapSelectorWheel(false);
+
+        // Initialize default number of holes
         holeNumberPicker.setValue(defaultHoleCount);
 
-        for (int i = 1; i < defaultHoleCount; i++) {
+        for (int i = 1; i <= defaultHoleCount; i++) {
             TableRow row = createHoleRow(i);
             holeTable.addView(row, x);
         }
@@ -40,11 +44,22 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         int holes = holeNumberPicker.getValue();
         holeTable = (TableLayout) findViewById(R.id.holeTable);
 
-        for (int i = 1; i < holes; i++) {
-            TableRow row = createHoleRow(i);
+        // If count increased, add hole
+        if (prevCount < holes) {
+            TableRow row = createHoleRow(holes);
             holeTable.addView(row, x);
         }
+
+        // If count decreased, remove last hole
+        else if (prevCount > holes) {
+            int count = holeTable.getChildCount();
+            holeTable.removeViewAt(count - 1);
+        }
+
+        prevCount = holes;
     }
+
+
 
     public TableRow createHoleRow(int holeNumber) {
         TableRow row = new TableRow(this);
