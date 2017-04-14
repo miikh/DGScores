@@ -5,7 +5,7 @@
 
     <LinearLayout
         android:id="@+id/vayla"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -26,17 +26,26 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:text="Par:"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <android.widget.NumberPicker
             android:id="@+id/numberPicker2"
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_vertical"
             android:layout_margin="12dp"
             android:layout_weight="1"
             android:isScrollContainer="false"
             android:keepScreenOn="false"
             android:longClickable="false" />
+
+        <EditText
+            android:id="@+id/fairway_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="12dp"
+            android:layout_weight="0.5"
+            android:hint="Distance" />
     </LinearLayout>
 </LinearLayout>

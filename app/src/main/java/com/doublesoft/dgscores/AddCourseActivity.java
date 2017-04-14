@@ -1,11 +1,13 @@
 package com.doublesoft.dgscores;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -15,7 +17,9 @@ import android.widget.TableRow;
 public class AddCourseActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
     NumberPicker holeNumberPicker;
+    Button saveCourse;
     LinearLayout holeTable;
+    Context context;
     LinearLayout.LayoutParams x = new TableLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     int defaultHoleCount = 18;
     int prevCount = defaultHoleCount;
@@ -24,6 +28,7 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
 
+        context = this;
         holeNumberPicker = (NumberPicker) findViewById(R.id.holeNumberPicker);
         holeTable = (LinearLayout) findViewById(R.id.holeTable);
 
@@ -31,6 +36,16 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         holeNumberPicker.setMaxValue(50);
         holeNumberPicker.setWrapSelectorWheel(false);
 
+        saveCourse = (Button)findViewById(R.id.button_save_course);
+        saveCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseAdapter db = new DatabaseAdapter(context);
+                db.open();
+                int holeCount = holeNumberPicker.getValue();
+                
+            }
+        });
         // Initialize default number of holes
         holeNumberPicker.setValue(defaultHoleCount);
 
@@ -69,6 +84,7 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         View row = inflater.inflate(R.layout.add_course_hole, null, false);
         EditText holeName = (EditText) row.findViewById(R.id.editText2);
         NumberPicker nb = (NumberPicker) row.findViewById(R.id.numberPicker2);
+        EditText fairwayDistance = (EditText) row.findViewById(R.id.fairway_distance);
 
         holeName.setText("Hole " + holeNumber);
 
