@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/vayla"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vayla"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/editText2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="12dp"
-            android:layout_weight="1"
-            android:inputType="textPersonName"
-            android:text="Name"
-            android:maxEms="6" />
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginRight="12dp"
+        android:layout_weight="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:maxLines="1" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <TextView
@@ -42,13 +44,13 @@
 
     </LinearLayout>
 
-        <EditText
-            android:id="@+id/fairway_distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="12dp"
-            android:layout_weight="1"
-            android:ems="2"
-            android:hint="Dist." />
-    </LinearLayout>
+    <EditText
+        android:id="@+id/fairway_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical"
+        android:layout_margin="12dp"
+        android:layout_weight="3"
+        android:hint="Dist."
+        android:maxLines="1" />
+</LinearLayout>
