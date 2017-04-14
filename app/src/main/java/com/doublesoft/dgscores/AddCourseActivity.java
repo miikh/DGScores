@@ -2,6 +2,9 @@ package com.doublesoft.dgscores;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -12,8 +15,8 @@ import android.widget.TableRow;
 public class AddCourseActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
     NumberPicker holeNumberPicker;
-    TableLayout holeTable;
-    TableLayout.LayoutParams x = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+    LinearLayout holeTable;
+    LinearLayout.LayoutParams x = new TableLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     int defaultHoleCount = 18;
     int prevCount = defaultHoleCount;
 
@@ -22,7 +25,7 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         setContentView(R.layout.activity_add_course);
 
         holeNumberPicker = (NumberPicker) findViewById(R.id.holeNumberPicker);
-        holeTable = (TableLayout) findViewById(R.id.holeTable);
+        holeTable = (LinearLayout) findViewById(R.id.holeTable);
 
         holeNumberPicker.setMinValue(1);
         holeNumberPicker.setMaxValue(50);
@@ -32,7 +35,7 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         holeNumberPicker.setValue(defaultHoleCount);
 
         for (int i = 1; i <= defaultHoleCount; i++) {
-            TableRow row = createHoleRow(i);
+            View row = createHoleRow(i);
             holeTable.addView(row, x);
         }
 
@@ -42,11 +45,11 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
     @Override
     public void onValueChange(NumberPicker numberPicker, int j, int j1) {
         int holes = holeNumberPicker.getValue();
-        holeTable = (TableLayout) findViewById(R.id.holeTable);
+        holeTable = (LinearLayout) findViewById(R.id.holeTable);
 
         // If count increased, add hole
         if (prevCount < holes) {
-            TableRow row = createHoleRow(holes);
+            View row = createHoleRow(holes);
             holeTable.addView(row, x);
         }
 
@@ -61,22 +64,18 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
 
 
 
-    public TableRow createHoleRow(int holeNumber) {
-        TableRow row = new TableRow(this);
-        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT));
+    public View createHoleRow(int holeNumber) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View row = inflater.inflate(R.layout.add_course_hole, null, false);
+        EditText holeName = (EditText) row.findViewById(R.id.editText2);
+        NumberPicker nb = (NumberPicker) row.findViewById(R.id.numberPicker2);
 
-        EditText holeName = new EditText(this);
         holeName.setText("Hole " + holeNumber);
-        holeName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT));
 
-        NumberPicker nb = new NumberPicker(this);
         nb.setValue(3);
         nb.setMinValue(1);
         nb.setMaxValue(50);
-        nb.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT));
-
-        row.addView(holeName);
-        row.addView(nb);
+        nb.setWrapSelectorWheel(false);
 
         return row;
     }
