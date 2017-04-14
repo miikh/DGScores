@@ -40,6 +40,10 @@ public class DatabaseAdapter {
         db.insert(TABLE_PLAYERS, null, name);
     }
 
+    public void insertCourse(ContentValues course, ContentValues[] fairways){
+
+    }
+
     public Cursor getPlayers(){
         return db.rawQuery("SELECT * FROM PLAYERS", null);
     }

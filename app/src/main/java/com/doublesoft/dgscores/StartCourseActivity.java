@@ -6,18 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,14 +18,12 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class StartCourseActivity extends AppCompatActivity {
 
     Context context;
     DatabaseAdapter db;
-    SimpleCursorAdapter adapter;
-    CustomCursorAdapter adapterC;
+    CustomCursorAdapter adapter;
     Cursor playersCursor;
     ListView listView;
 
@@ -52,18 +43,17 @@ public class StartCourseActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.choose_players_listview);
 
-        adapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_checked, playersCursor, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
-
-        adapterC = new CustomCursorAdapter(context, android.R.layout.simple_list_item_checked, playersCursor, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
+        adapter = new CustomCursorAdapter(context, android.R.layout.simple_list_item_checked, playersCursor, new String[]{"NAME"}, new int[]{android.R.id.text1},0);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CheckedTextView cb = ((CheckedTextView)view);
-                if(!adapterC.players.contains(cb.getText().toString())){
-                    adapterC.players.add(cb.getText().toString());
+                if(!adapter.players.contains(cb.getText().toString())){
+                    adapter.players.add(cb.getText().toString());
                 }
-                else {adapterC.players.remove(cb.getText().toString());}
+                else {
+                    adapter.players.remove(cb.getText().toString());}
                 if(!cb.isChecked()){
                     cb.setChecked(true);
                 }
@@ -71,7 +61,7 @@ public class StartCourseActivity extends AppCompatActivity {
             }
         });
 
-        listView.setAdapter(adapterC);
+        listView.setAdapter(adapter);
 
         FloatingActionButton addPlayer = (FloatingActionButton) findViewById(R.id.btnAddPlayerPlayCourse);
         addPlayer.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +97,7 @@ public class StartCourseActivity extends AppCompatActivity {
                             cv.put("name", name);
                             db.insertPlayers(cv);
                             playersCursor = db.getPlayers();
-                            adapterC.swapCursor(playersCursor);
+                            adapter.swapCursor(playersCursor);
                             //Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
                         }
                         //else { t.setError("Set player name"); }
@@ -125,9 +115,9 @@ public class StartCourseActivity extends AppCompatActivity {
     }
 
     private void setChooseCourse(){
-        if(adapterC.players.size() > 0){
+        if(adapter.players.size() > 0){
             Intent i = new Intent();
-            i.putExtra("players", adapterC.players);
+            i.putExtra("players", adapter.players);
         }
         else {Toast.makeText(context, "Choose players first!", Toast.LENGTH_LONG).show();}
 
