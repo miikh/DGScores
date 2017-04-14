@@ -9,7 +9,7 @@
     tools:context="com.doublesoft.dgscores.CoursesActivity">
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnAddCourse"
+        android:id="@+id/btn_add_course"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -30,7 +30,7 @@
         android:layout_alignParentEnd="true">
 
         <LinearLayout
-            android:id="@+id/courseList"
+            android:id="@+id/course_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />

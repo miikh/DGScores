@@ -53,10 +53,10 @@
         <activity
             android:name=".AddCourseActivity"
             android:label="@string/title_activity_add_course"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".CoursesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".CoursesActivity" />
         </activity>
     </application>
 

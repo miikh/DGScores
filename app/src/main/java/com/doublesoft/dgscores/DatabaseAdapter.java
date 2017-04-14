@@ -36,22 +36,32 @@ public class DatabaseAdapter {
         }
     }
 
+    public void close(){
+        dbHelper.close();
+    }
+
     public void insertPlayers(ContentValues name){
         db.insert(TABLE_PLAYERS, null, name);
     }
 
     public void insertCourse(ContentValues course, ContentValues[] fairways){
-
+        long id = db.insert(TABLE_COURSES, null, course);
+        for(int i=0;i<fairways.length;i++){
+            fairways[i].put("course_id", id);
+            db.insert(TABLE_FAIRWAY, null, fairways[i]);
+        }
     }
 
     public Cursor getPlayers(){
         return db.rawQuery("SELECT * FROM PLAYERS", null);
     }
 
+    public Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES", null); }
+
     static class DBOpenHelper extends SQLiteOpenHelper{
 
         private static final String CREATETABLE_COURSES = "CREATE TABLE IF NOT EXISTS COURSES (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "NAME TEXT NOT NULL, HOLE_COUNT INT, PAR INT NOT NULL, DISTANCE INT);";
+                "NAME TEXT NOT NULL, HOLE_COUNT INT NOT NULL, PAR INT NOT NULL, DISTANCE INT);";
         private static final String CREATETABLE_FAIRWAY = "CREATE TABLE IF NOT EXISTS FAIRWAY (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "COURSE_ID INT, PAR INT NOT NULL, DISTANCE INT, NAME TEXT, " +
                 "FOREIGN KEY (COURSE_ID) REFERENCES COURSES(_id));";
