@@ -14,29 +14,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_margin="12dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="2"
             android:inputType="textPersonName"
+            android:maxEms="7"
             android:text="Name" />
 
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:text="Par:"
-            android:textSize="20sp" />
+            android:layout_weight="2"
+            android:orientation="horizontal">
 
-        <android.widget.NumberPicker
-            android:id="@+id/numberPicker2"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="12dp"
-            android:layout_weight="1"
-            android:isScrollContainer="false"
-            android:keepScreenOn="false"
-            android:longClickable="false" />
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Par:"
+                android:textSize="20sp" />
+
+            <android.widget.NumberPicker
+                android:id="@+id/numberPicker2"
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:layout_margin="12dp"
+                android:layout_weight="1"
+                android:isScrollContainer="false"
+                android:keepScreenOn="false" />
+        </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>
