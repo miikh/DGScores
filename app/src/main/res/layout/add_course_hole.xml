@@ -29,9 +29,9 @@
         android:layout_height="70dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="4"
+        android:descendantFocusability="blocksDescendants"
         android:isScrollContainer="false"
-        android:keepScreenOn="false"
-        android:longClickable="false" />
+        android:keepScreenOn="false" />
 
     <EditText
         android:id="@+id/fairway_distance"

@@ -64,9 +64,9 @@
                 android:id="@+id/holeNumberPicker"
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
+                android:descendantFocusability="blocksDescendants"
                 android:isScrollContainer="false"
-                android:keepScreenOn="false"
-                android:longClickable="false" />
+                android:keepScreenOn="false" />
 
 
         </LinearLayout>
