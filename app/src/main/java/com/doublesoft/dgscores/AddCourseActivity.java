@@ -84,9 +84,9 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
 
         holeName.setText("Hole " + holeNumber);
 
-        nb.setValue(3);
         nb.setMinValue(1);
         nb.setMaxValue(50);
+        nb.setValue(3);
         nb.setWrapSelectorWheel(false);
 
         return row;

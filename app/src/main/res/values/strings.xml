@@ -10,7 +10,7 @@
     <string name="course_name">Course name</string>
     <string name="save_course">Save course</string>
     <string name="holes">Holes</string>
-    <string name="hole_distance">Distance (m)</string>
+    <string name="hole_distance">Dist. (m)</string>
     <string name="course_name_error">Set name !</string>
     <string name="choose_course">Choose Course</string>
 </resources>
