@@ -116,8 +116,9 @@ public class StartCourseActivity extends AppCompatActivity {
 
     private void setChooseCourse(){
         if(adapter.players.size() > 0){
-            Intent i = new Intent();
+            Intent i = new Intent(StartCourseActivity.this, ChooseCourseActivity.class);
             i.putExtra("players", adapter.players);
+            this.startActivity(i);
         }
         else {Toast.makeText(context, "Choose players first!", Toast.LENGTH_LONG).show();}
 
