@@ -30,7 +30,7 @@ public class StartCourseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play_course);
+        setContentView(R.layout.activity_start_course);
 
         context = this;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

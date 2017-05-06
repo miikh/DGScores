@@ -64,8 +64,17 @@
             android:parentActivityName=".StartCourseActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StartCourseActivity"/>
-            ></activity>
+                android:value=".StartCourseActivity" />
+            >
+        </activity>
+        <activity
+            android:name=".PlayCourse"
+            android:label="@string/title_activity_play_course"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.doublesoft.dgscores.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

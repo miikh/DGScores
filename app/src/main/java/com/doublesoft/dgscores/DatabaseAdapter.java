@@ -58,6 +58,8 @@ public class DatabaseAdapter {
 
     public Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES", null); }
 
+    public Cursor getCourse(String name) { return db.rawQuery("SELECT * FROM COURSES WHERE NAME =?", new String[]{name}); }
+
     static class DBOpenHelper extends SQLiteOpenHelper{
 
         private static final String CREATETABLE_COURSES = "CREATE TABLE IF NOT EXISTS COURSES (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
