@@ -31,16 +31,20 @@ public class ChooseCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_course);
         context = this;
+        //TODO: otsikko ei näy supportactionbarissa?
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = this.getIntent();
         players = intent.getStringArrayListExtra("players");
-
+        String courseName = intent.getStringExtra("courseName");
+        getSupportActionBar().setTitle(courseName);
         db = new DatabaseAdapter(context);
         db.open();
 
         courses = db.getCourses();
         listView = (ListView) findViewById(R.id.choose_course_listview);
+
+        //TODO: lisää addCourse FloatingButton tähän + xml
 
         CourseCursorAdapter adapter = new CourseCursorAdapter(context, courses, 0);
 
@@ -50,13 +54,12 @@ public class ChooseCourseActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 LinearLayout l = (LinearLayout) view;
-                String[] s = ((TextView) l.getChildAt(0)).getText().toString().split(" ");
-                String courseName = s[1];
+                String[] s = ((TextView) l.getChildAt(0)).getText().toString().split(":");
+                String courseName = s[1].trim();
                 Intent i = new Intent(ChooseCourseActivity.this, PlayCourse.class);
                 i.putExtra("courseName", courseName);
                 i.putStringArrayListExtra("players", players);
                 context.startActivity(i);
-                Toast.makeText(context, (players.get(0) + " pelaa rataa " + courseName), Toast.LENGTH_LONG).show();
             }
         });
 

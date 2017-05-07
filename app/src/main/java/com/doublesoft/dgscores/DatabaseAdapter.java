@@ -3,9 +3,16 @@ package com.doublesoft.dgscores;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by yone on 14.10.2016.
@@ -52,13 +59,38 @@ public class DatabaseAdapter {
         }
     }
 
+    public void insertScrorecards(){
+
+    }
+
     public Cursor getPlayers(){
         return db.rawQuery("SELECT * FROM PLAYERS", null);
     }
 
-    public Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES", null); }
+    public Cursor getPlayer(String name) { return db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ?", new String[] {name}); }
 
-    public Cursor getCourse(String name) { return db.rawQuery("SELECT * FROM COURSES WHERE NAME =?", new String[]{name}); }
+    public Cursor getCoursePlayers(ArrayList<String> players) {
+        MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "NAME"}, players.size());
+        for(String p : players) {
+            Cursor c = getPlayer(p);
+            c.moveToFirst();
+            cursor.addRow(new Object[] {c.getString(0), c.getString(1)});
+        }
+        return cursor;
+    }
+
+    public Cursor getFairways(String courseName){
+
+        Cursor course = getCourse(courseName);
+        course.moveToFirst();
+        long id = course.getLong(0);
+
+        return db.rawQuery("SELECT * FROM FAIRWAY WHERE COURSE_ID =?", new String[]{Long.toString(id)});
+    }
+
+    public Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES ORDER BY NAME ASC", null); }
+
+    public Cursor getCourse(String name) { return db.rawQuery("SELECT * FROM COURSES WHERE NAME = ?", new String[]{name}); }
 
     static class DBOpenHelper extends SQLiteOpenHelper{
 

@@ -1,5 +1,6 @@
 package com.doublesoft.dgscores;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /** Käytettävät oliot:
@@ -11,20 +12,28 @@ import java.util.Date;
 public class Objects {
 
     public class Fairway {
-        int id;
+        long _id;
+        long courseId;
         int par;
         int distance;
         String name;
 
         public Fairway() {}
 
-        public Fairway(int id, int par, int distance, String name){
-            this.id = id;
+        public Fairway(long id, long courseId, int par, int distance, String name){
+            this._id = id;
+            this.courseId = courseId;
             this.par = par;
             this.distance = distance;
             this.name = name;
         }
 
+        public long get_id() {
+            return _id;
+        }
+        public long getCourseId() {
+            return courseId;
+        }
         public int getDistance() {
             return distance;
         }
@@ -79,14 +88,19 @@ public class Objects {
     }
 
     public class Player {
+        long _id;
         String name;
 
         public Player() {}
 
-        public Player (String name){
+        public Player (long _id,String name){
+            this._id = _id;
             this.name = name;
         }
 
+        public long get_id() {
+            return _id;
+        }
         public String getName(){
             return name;
         }
@@ -97,17 +111,40 @@ public class Objects {
 
     }
 
-    public class Round {
-        Course course;
-        Player[] players;
+    public class Scorecards {
+        long _id;
+        long fairwayId;
+        long gameId;
+        int ob;
+        int throwCount;
         Date date;
-        int[][] results;
 
-        public Round(Course course, Player[] players){
-            this.course = course;
-            this.players = players;
-            this.results = new int[players.length][course.getHoleCount()];
-            this.date = new Date();
+        public Scorecards(long _id, long faiwayId, long gameId, int ob, int throwCount){
+            this._id = _id;
+            this.fairwayId = faiwayId;
+            this.gameId = gameId;
+            this.ob = ob;
+            this.throwCount = throwCount;
+            this.date = Calendar.getInstance().getTime();
+        }
+
+        public long get_id() {
+            return _id;
+        }
+        public long getFairwayId() {
+            return fairwayId;
+        }
+        public long getGameId() {
+            return gameId;
+        }
+        public int getOb() {
+            return ob;
+        }
+        public int getThrowCount() {
+            return throwCount;
+        }
+        public Date getDate() {
+            return date;
         }
     }
 
