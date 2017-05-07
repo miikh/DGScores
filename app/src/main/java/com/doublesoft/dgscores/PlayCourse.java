@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Random;
 
 public class PlayCourse extends AppCompatActivity {
@@ -36,7 +37,7 @@ public class PlayCourse extends AppCompatActivity {
     static Cursor holes;
     static int holeCount;
     static ArrayList<String> playerList;
-    static ArrayList<Scorecards> scorecards;
+    static HashMap<String,Scorecards> scorecards;
     ViewPager pager;
     CustomPagerAdapter adapter;
     Button next;
@@ -113,13 +114,13 @@ public class PlayCourse extends AppCompatActivity {
 
         Random rand = new Random(System.currentTimeMillis());
         int gameId = rand.nextInt(Integer.SIZE - 1);
-        scorecards = new ArrayList<Scorecards>();
+        scorecards = new HashMap<String, Scorecards>();
         while (!holes.isAfterLast()){
             while (!players.isAfterLast()){
                 String pId = players.getString(0);
                 String hId = holes.getString(0);
                 String tC = holes.getString(holes.getColumnIndex("PAR"));
-                scorecards.add(new Scorecards(pId, hId, gameId, 0, tC));
+                scorecards.put((pId+hId), new Scorecards(pId, hId, gameId, 0, tC));
                 players.moveToNext();
             }
             players.moveToFirst();
@@ -164,6 +165,7 @@ public class PlayCourse extends AppCompatActivity {
             String playerId[] = new String[players.getCount()];
             for(int i=0;i<playerId.length;i++){
                 playerId[i] = players.getString(0);
+                players.moveToNext();
             }
             Bundle b = new Bundle();
             b.putInt("hole", position);
@@ -190,20 +192,15 @@ public class PlayCourse extends AppCompatActivity {
             subtract.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    score.setText(Integer.toString(Integer.parseInt(score.getText().toString()) - 1));
-                    for(Scorecards s : scorecards){
-                        for(String id : playerId){
-                            Cursor p = db.getPlayer(player);
-                            p.moveToFirst();
-                            if(id.equals(p.getString(0)) && holeId.equals(s.getFairwayId())){
-                                int throwCount = Integer.parseInt(s.throwCount);
-                                throwCount--;
-                                s.throwCount = Integer.toString(throwCount);
-                                s.setDate();
-                                p.close();
-                                break;
-                            }
+                    String throwCount = Integer.toString(Integer.parseInt(score.getText().toString()) - 1);
+                    score.setText(throwCount);
+                    players.moveToFirst();
+                    for(String id : playerId){
+                        if(id.equals(players.getString(0))) {
+                            scorecards.get(id + holeId).throwCount = throwCount;
+                            break;
                         }
+                        players.moveToNext();
                     }
                     if(score.getText().equals("1")){
                         subtract.setClickable(false);
@@ -214,20 +211,15 @@ public class PlayCourse extends AppCompatActivity {
             add.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    score.setText(Integer.toString(Integer.parseInt(score.getText().toString()) + 1));
-                    for(Scorecards s : scorecards){
-                        for(String id : playerId){
-                            Cursor p = db.getPlayer(player);
-                            p.moveToFirst();
-                            if(id.equals(p.getString(0)) && holeId.equals(s.getFairwayId())){
-                                int throwCount = Integer.parseInt(s.throwCount);
-                                throwCount++;
-                                s.throwCount = Integer.toString(throwCount);
-                                s.setDate();
-                                p.close();
-                                break;
-                            }
+                    String throwCount = Integer.toString(Integer.parseInt(score.getText().toString()) + 1);
+                    score.setText(throwCount);
+                    players.moveToFirst();
+                    for(String id : playerId){
+                        if(id.equals(players.getString(0))) {
+                            scorecards.get(id + holeId).throwCount = throwCount;
+                            break;
                         }
+                        players.moveToNext();
                     }
                     if(score.getText().equals("2")){
                         subtract.setClickable(true);

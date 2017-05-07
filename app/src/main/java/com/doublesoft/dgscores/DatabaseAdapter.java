@@ -64,7 +64,7 @@ public class DatabaseAdapter {
     }
 
     public Cursor getPlayers(){
-        return db.rawQuery("SELECT * FROM PLAYERS", null);
+        return db.rawQuery("SELECT * FROM PLAYERS ORDER BY NAME ASC", null);
     }
 
     public Cursor getPlayer(String name) { return db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ?", new String[] {name}); }
