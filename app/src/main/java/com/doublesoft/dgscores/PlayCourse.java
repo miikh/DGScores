@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.test.suitebuilder.TestMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,8 +36,8 @@ public class PlayCourse extends AppCompatActivity {
     static int holeCount;
     static ArrayList<String> playerList;
     static HashMap<String,Scorecards> scorecards;
-    ViewPager pager;
-    CustomPagerAdapter adapter;
+    ViewPager viewPager;
+    CustomPagerAdapter pagerAdapter;
     Button next;
     Button prev;
 
@@ -74,9 +71,9 @@ public class PlayCourse extends AppCompatActivity {
         String[] a = new String[playerList.size()];
         //players = db.getCoursePlayers(playersList.toArray(a));
 
-        pager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
 
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
@@ -90,9 +87,11 @@ public class PlayCourse extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {}
         });
 
-        adapter = new CustomPagerAdapter(getSupportFragmentManager());
+        viewPager.setOffscreenPageLimit(3);
 
-        pager.setAdapter(adapter);
+        pagerAdapter = new CustomPagerAdapter(getSupportFragmentManager());
+
+        viewPager.setAdapter(pagerAdapter);
 
         next = (Button) findViewById(R.id.button2);
         prev = (Button) findViewById(R.id.button);
@@ -101,14 +100,14 @@ public class PlayCourse extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pager.setCurrentItem(pager.getCurrentItem()+1);
+                viewPager.setCurrentItem(viewPager.getCurrentItem()+1);
             }
         });
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pager.setCurrentItem(pager.getCurrentItem()-1);
+                viewPager.setCurrentItem(viewPager.getCurrentItem()-1);
             }
         });
 
@@ -160,10 +159,18 @@ public class PlayCourse extends AppCompatActivity {
 
             holeView.setText("Hole " + (hole+1));
 
+            players.moveToFirst();
+            for(int i=0;i<playerId.length;i++){
+                if(playerId[i].equals(players.getString(0)))
+                    addRow(playerList.get(i), par, holeId, playerId[i]);
+                players.moveToNext();
+            }
+            /*
             for(String player : playerList){
+                if(player.equals(players.getString(players.getColumnIndex("NAME"))))
                 addRow(player, par, holeId, playerId);
             }
-
+            */
             return rootView;
         }
 
@@ -187,7 +194,7 @@ public class PlayCourse extends AppCompatActivity {
             return fragment;
         }
 
-        private void addRow(final String player, int par , final String holeId, final String[] playerId){
+        private void addRow(final String player, int par , final String holeId, final String playerId){
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.fragment_layout);
             LayoutInflater inflater = LayoutInflater.from(context);
             RelativeLayout row = (RelativeLayout) inflater.inflate(R.layout.play_course_row, null, false);
@@ -196,8 +203,7 @@ public class PlayCourse extends AppCompatActivity {
             final TextView score = (TextView) row.findViewById(R.id.row_score);
             final Button subtract = (Button) row.findViewById(R.id.row_subtract);
             Button add = (Button) row.findViewById(R.id.row_add);
-
-            score.setText(Integer.toString(par));
+            score.setText(scorecards.get(playerId+holeId).throwCount);
             name.setText(player);
 
             subtract.setOnClickListener(new View.OnClickListener() {
@@ -205,14 +211,7 @@ public class PlayCourse extends AppCompatActivity {
                 public void onClick(View v) {
                     String throwCount = Integer.toString(Integer.parseInt(score.getText().toString()) - 1);
                     score.setText(throwCount);
-                    players.moveToFirst();
-                    for(String id : playerId){
-                        if(id.equals(players.getString(0))) {
-                            scorecards.get(id + holeId).throwCount = throwCount;
-                            break;
-                        }
-                        players.moveToNext();
-                    }
+                    scorecards.get(playerId + holeId).throwCount = throwCount;
                     if(score.getText().equals("1")){
                         subtract.setClickable(false);
                     }
@@ -224,14 +223,7 @@ public class PlayCourse extends AppCompatActivity {
                 public void onClick(View v) {
                     String throwCount = Integer.toString(Integer.parseInt(score.getText().toString()) + 1);
                     score.setText(throwCount);
-                    players.moveToFirst();
-                    for(String id : playerId){
-                        if(id.equals(players.getString(0))) {
-                            scorecards.get(id + holeId).throwCount = throwCount;
-                            break;
-                        }
-                        players.moveToNext();
-                    }
+                    scorecards.get(playerId + holeId).throwCount = throwCount;
                     if(score.getText().equals("2")){
                         subtract.setClickable(true);
                     }
@@ -241,9 +233,10 @@ public class PlayCourse extends AppCompatActivity {
             layout.addView(row);
 
         }
+
     }
 
-    private class CustomPagerAdapter extends FragmentPagerAdapter{
+    private class CustomPagerAdapter extends FragmentStatePagerAdapter {
 
         private int NUM_ITEMS = holeCount;
 
