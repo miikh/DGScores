@@ -10,29 +10,28 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_margin="12dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
+        android:ems="6"
         android:inputType="textPersonName"
         android:text="Name" />
 
     <TextView
-        android:layout_width="15dp"
+        android:layout_width="10dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:text="Par:"
-        android:textSize="18sp" />
+        android:textSize="16sp" />
 
     <android.widget.NumberPicker
         android:id="@+id/hole_number_picker"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="12dp"
-        android:layout_marginStart="12dp"
-        android:layout_weight="1"
+        android:layout_weight="4"
+        android:descendantFocusability="blocksDescendants"
         android:isScrollContainer="false"
-        android:keepScreenOn="false"
-        android:longClickable="false" />
+        android:keepScreenOn="false" />
 
     <EditText
         android:id="@+id/fairway_distance"
@@ -40,7 +39,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_margin="12dp"
-        android:layout_weight="0.5"
+        android:layout_weight="1"
+        android:ems="3"
         android:hint="@string/hole_distance"
         android:inputType="number" />
 
