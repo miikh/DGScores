@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class ScorecardsActivity extends AppCompatActivity {
 
@@ -24,8 +25,10 @@ public class ScorecardsActivity extends AppCompatActivity {
 
         scorecards = db.getScorecards();
 
-        ListView listView = (ListView) findViewById(R.id.scorecards_listview);
+        TextView testView = (TextView) findViewById(R.id.scorecards_text);
 
         scorecards.moveToFirst();
+
+        testView.append(Integer.toString(scorecards.getCount()));
     }
 }
