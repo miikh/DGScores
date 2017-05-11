@@ -35,7 +35,10 @@ public class PlayCourse extends AppCompatActivity {
     static int holeCount;
     static ArrayList<String> playerList;
     static HashMap<String,Scorecards> scorecards;
-    ViewPager viewPager;
+    static HashMap<String, String> scores;
+    static HashMap<String, TextView> scoreViews;
+    static ViewPager viewPager;
+    static boolean instantiated;
     CustomPagerAdapter pagerAdapter;
     Button next;
     Button prev;
@@ -52,6 +55,12 @@ public class PlayCourse extends AppCompatActivity {
         Intent intent = this.getIntent();
         String courseName = intent.getStringExtra("courseName");
         playerList = intent.getStringArrayListExtra("players");
+        scores = new HashMap<>();
+        scoreViews = new HashMap<>();
+        instantiated = false;
+        for(String p : playerList){
+            scores.put(p, "0");
+        }
 
         db = new DatabaseAdapter(context);
         db.open();
@@ -83,7 +92,7 @@ public class PlayCourse extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {}
         });
 
-        viewPager.setOffscreenPageLimit(3);
+        //viewPager.setOffscreenPageLimit(3);
 
         pagerAdapter = new CustomPagerAdapter(getSupportFragmentManager());
 
@@ -128,6 +137,13 @@ public class PlayCourse extends AppCompatActivity {
 
         Log.i("Scorecards row count", Integer.toString(scorecards.size()));
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //instantiated = true;
     }
 
     public static class HoleFragment extends Fragment {
@@ -154,12 +170,7 @@ public class PlayCourse extends AppCompatActivity {
                     addRow(playerList.get(i), par, holeId, playerId[i]);
                 players.moveToNext();
             }
-            /*
-            for(String player : playerList){
-                if(player.equals(players.getString(players.getColumnIndex("NAME"))))
-                addRow(player, par, holeId, playerId);
-            }
-            */
+
             return rootView;
         }
 
@@ -183,24 +194,30 @@ public class PlayCourse extends AppCompatActivity {
             return fragment;
         }
 
-        private void addRow(final String player, int par , final String holeId, final String playerId){
+        private void addRow(final String player, final int par, final String holeId, final String playerId){
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.fragment_layout);
             LayoutInflater inflater = LayoutInflater.from(context);
             RelativeLayout row = (RelativeLayout) inflater.inflate(R.layout.play_course_row, null, false);
 
             TextView name = (TextView) row.findViewById(R.id.row_name);
             final TextView score = (TextView) row.findViewById(R.id.row_score);
+            final TextView scoreView = (TextView) row.findViewById(R.id.row_scoreview);
             final Button subtract = (Button) row.findViewById(R.id.row_subtract);
             Button add = (Button) row.findViewById(R.id.row_add);
             score.setText(scorecards.get(playerId+holeId).throwCount);
+            scoreView.setText("Score: " + scores.get(player));
             name.setText(player);
+            scoreViews.put(player, scoreView);
 
             subtract.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String throwCount = Integer.toString(Integer.parseInt(score.getText().toString()) - 1);
+                    String sV = Integer.toString(Integer.parseInt(scores.get(player)) - 1);
                     score.setText(throwCount);
+                    scoreView.setText("Score: " + sV);
                     scorecards.get(playerId + holeId).throwCount = throwCount;
+                    scores.put(player, sV);
                     if(score.getText().equals("1")){
                         subtract.setClickable(false);
                     }
@@ -211,8 +228,11 @@ public class PlayCourse extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String throwCount = Integer.toString(Integer.parseInt(score.getText().toString()) + 1);
+                    String sV = Integer.toString(Integer.parseInt(scores.get(player)) + 1);
                     score.setText(throwCount);
+                    scoreView.setText("Score: " + sV);
                     scorecards.get(playerId + holeId).throwCount = throwCount;
+                    scores.put(player, sV);
                     if(score.getText().equals("2")){
                         subtract.setClickable(true);
                     }
@@ -221,6 +241,12 @@ public class PlayCourse extends AppCompatActivity {
 
             layout.addView(row);
 
+        }
+
+        private void changeScore(String player){
+            TextView t = scoreViews.get(player);
+            t.setText("Score: " + scores.get(player));
+            scoreViews.put(player, t);
         }
 
     }
@@ -234,6 +260,24 @@ public class PlayCourse extends AppCompatActivity {
         }
 
         @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+
+            players.moveToFirst();
+            if(instantiated) {
+                //TODO: ei toimi
+                for (int i = 0; i < players.getCount(); i++) {
+                    String player = players.getString(1);
+                    ((HoleFragment) fragment).changeScore(player);
+                    players.moveToNext();
+                }
+            }
+            return fragment;
+
+        }
+
+        @Override
         public Fragment getItem(int position) {
             holes.moveToFirst();
             for(int i=0;i<NUM_ITEMS;i++){
@@ -244,6 +288,7 @@ public class PlayCourse extends AppCompatActivity {
             }
             return null;
         }
+
 
         @Override
         public int getCount() {
