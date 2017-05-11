@@ -119,9 +119,9 @@ public class Objects {
         int throwCount;
         Date date;
 
-        public Scorecards(long _id, long faiwayId, long gameId, int ob, int throwCount){
+        public Scorecards(long _id, long fairwayId, long gameId, int ob, int throwCount){
             this._id = _id;
-            this.fairwayId = faiwayId;
+            this.fairwayId = fairwayId;
             this.gameId = gameId;
             this.ob = ob;
             this.throwCount = throwCount;

@@ -1,5 +1,6 @@
 package com.doublesoft.dgscores;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -42,6 +43,9 @@ public class PlayCourse extends AppCompatActivity {
     CustomPagerAdapter pagerAdapter;
     Button next;
     Button prev;
+
+    //DEBUG
+    Button debug_insert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +120,13 @@ public class PlayCourse extends AppCompatActivity {
             }
         });
 
+       /* debug_insert = (Button) findViewById(R.id.debug_insertScorecard);
+       debug_insert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.insertScorecard(debugCard);
+            }
+        });*/
 
         holes.moveToFirst();
         players.moveToFirst();

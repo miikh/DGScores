@@ -59,8 +59,8 @@ public class DatabaseAdapter {
         }
     }
 
-    public void insertScrorecards(){
-
+    public void insertScorecard(ContentValues scorecard){
+        db.insert(TABLE_SCORECARDS, null, scorecard);
     }
 
     public Cursor getPlayers(){
@@ -92,7 +92,9 @@ public class DatabaseAdapter {
 
     public Cursor getCourse(String name) { return db.rawQuery("SELECT * FROM COURSES WHERE NAME = ?", new String[]{name}); }
 
-    public Cursor getScorecards() { return db.rawQuery("SELECT * FROM SCORECARDS", null); }
+    public Cursor getScorecards() { return db.rawQuery("SELECT * FROM SCORECARDS ORDER BY GAME_ID", null); }
+
+    public Cursor getScorecardByGameId(long gameId) { return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ?", new String[]{Long.toString(gameId)}); }
 
     static class DBOpenHelper extends SQLiteOpenHelper{
 
