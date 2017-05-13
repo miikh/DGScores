@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,19 +30,20 @@ import java.util.Random;
 
 public class PlayCourse extends AppCompatActivity {
 
-    static Context context;
-    static DatabaseAdapter db;
-    static Cursor course;
+    Context context;
+    DatabaseAdapter db;
+    Cursor course;
     static Cursor players;
     static Cursor holes;
     static int holeCount;
     static ArrayList<String> playerList;
-    static HashMap<String,Scorecards> scorecards;
+    static HashMap<String,Scorecards> scorecards; // key == playerId + holeId
     static HashMap<String, String> scores;
     static HashMap<String, TextView> scoreViews;
-    static ViewPager viewPager;
+    ViewPager viewPager;
     static boolean instantiated;
     CustomPagerAdapter pagerAdapter;
+    static private SparseArray<Fragment> fragments;
     Button next;
     Button prev;
 
@@ -77,7 +80,7 @@ public class PlayCourse extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.textView10)).setText(courseName);
 
-        String[] a = new String[playerList.size()];
+        //String[] a = new String[playerList.size()];
         //players = db.getCoursePlayers(playersList.toArray(a));
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -120,20 +123,34 @@ public class PlayCourse extends AppCompatActivity {
             }
         });
 
-       /* debug_insert = (Button) findViewById(R.id.debug_insertScorecard);
+       debug_insert = (Button) findViewById(R.id.debug_insertScorecard);
        debug_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.insertScorecard(debugCard);
+                ContentValues[] values = new ContentValues[scorecards.size()];
+                int i=0;
+                for(HashMap.Entry e : scorecards.entrySet()){
+                    Scorecards sc = (Scorecards) e.getValue();
+                    values[i] = new ContentValues();
+                    values[i].put("PLAYER_ID", Integer.parseInt(sc.playerId));
+                    values[i].put("FAIRWAY_ID", Integer.parseInt(sc.fairwayId));
+                    values[i].put("GAME_ID", sc.gameId);
+                    values[i].put("OB", sc.ob);
+                    values[i].put("THROW_COUNT", Integer.parseInt(sc.throwCount));
+                    values[i].put("DATE", sc.date.toString());
+                    i++;
+                }
+                db.insertScorecard(values);
+                Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
         holes.moveToFirst();
         players.moveToFirst();
 
         Random rand = new Random(System.currentTimeMillis());
         int gameId = rand.nextInt(Integer.SIZE - 1);
-        scorecards = new HashMap<String, Scorecards>();
+        scorecards = new HashMap<>();
         while (!holes.isAfterLast()){
             while (!players.isAfterLast()){
                 String pId = players.getString(0);
@@ -168,7 +185,7 @@ public class PlayCourse extends AppCompatActivity {
 
             Bundle b = getArguments();
             int hole = b.getInt("hole");
-            int par = b.getInt("par");
+            //int par = b.getInt("par");
             String holeId = b.getString("holeId");
             String[] playerId = b.getStringArray("playerId");
             TextView holeView = (TextView) rootView.findViewById(R.id.textView2);
@@ -178,7 +195,7 @@ public class PlayCourse extends AppCompatActivity {
             players.moveToFirst();
             for(int i=0;i<playerId.length;i++){
                 if(playerId[i].equals(players.getString(0)))
-                    addRow(playerList.get(i), par, holeId, playerId[i]);
+                    addRow(playerList.get(i), holeId, playerId[i]);
                 players.moveToNext();
             }
 
@@ -188,7 +205,7 @@ public class PlayCourse extends AppCompatActivity {
         public static HoleFragment newInstance(int position, Cursor hole){
 
             HoleFragment fragment = new HoleFragment();
-            int par = Integer.parseInt(hole.getString(hole.getColumnIndex("PAR")));
+            //int par = Integer.parseInt(hole.getString(hole.getColumnIndex("PAR")));
             String holeId = hole.getString(0);
             players.moveToFirst();
             String playerId[] = new String[players.getCount()];
@@ -198,16 +215,16 @@ public class PlayCourse extends AppCompatActivity {
             }
             Bundle b = new Bundle();
             b.putInt("hole", position);
-            b.putInt("par", par);
+            //b.putInt("par", par);
             b.putString("holeId", holeId);
             b.putStringArray("playerId", playerId);
             fragment.setArguments(b);
             return fragment;
         }
 
-        private void addRow(final String player, final int par, final String holeId, final String playerId){
+        private void addRow(final String player, final String holeId, final String playerId){
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.fragment_layout);
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
             RelativeLayout row = (RelativeLayout) inflater.inflate(R.layout.play_course_row, null, false);
 
             TextView name = (TextView) row.findViewById(R.id.row_name);
@@ -228,7 +245,12 @@ public class PlayCourse extends AppCompatActivity {
                     score.setText(throwCount);
                     scoreView.setText("Score: " + sV);
                     scorecards.get(playerId + holeId).throwCount = throwCount;
+                    scorecards.get(playerId + holeId).date = Calendar.getInstance().getTime();
                     scores.put(player, sV);
+                    for(int i=0;i<fragments.size();i++){
+                        int key = fragments.keyAt(i);
+                        updateOverallScores(fragments.get(key), player, sV);
+                    }
                     if(score.getText().equals("1")){
                         subtract.setClickable(false);
                     }
@@ -243,7 +265,12 @@ public class PlayCourse extends AppCompatActivity {
                     score.setText(throwCount);
                     scoreView.setText("Score: " + sV);
                     scorecards.get(playerId + holeId).throwCount = throwCount;
+                    scorecards.get(playerId + holeId).date = Calendar.getInstance().getTime();
                     scores.put(player, sV);
+                    for(int i=0;i<fragments.size();i++){
+                        int key = fragments.keyAt(i);
+                        updateOverallScores(fragments.get(key), player, sV);
+                    }
                     if(score.getText().equals("2")){
                         subtract.setClickable(true);
                     }
@@ -254,10 +281,17 @@ public class PlayCourse extends AppCompatActivity {
 
         }
 
-        private void changeScore(String player){
-            TextView t = scoreViews.get(player);
-            t.setText("Score: " + scores.get(player));
-            scoreViews.put(player, t);
+        private void updateOverallScores(Fragment fragment, String player, String score){
+            LinearLayout layout = (LinearLayout)((HoleFragment)fragment).rootView.findViewById(R.id.fragment_layout);
+            for(int i=0;i<layout.getChildCount();i++){
+                RelativeLayout row = (RelativeLayout) layout.getChildAt(i);
+                TextView scoreView = (TextView) row.findViewById(R.id.row_scoreview);
+                TextView playerView = (TextView) row.findViewById(R.id.row_name);
+                if(playerView.getText().toString().equals(player)) {
+                    scoreView.setText("Score: " + score);
+                    return;
+                }
+            }
         }
 
     }
@@ -266,24 +300,16 @@ public class PlayCourse extends AppCompatActivity {
 
         private int NUM_ITEMS = holeCount;
 
-        public CustomPagerAdapter(FragmentManager fm) {
+        CustomPagerAdapter(FragmentManager fm) {
             super(fm);
+            fragments = new SparseArray<>();
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
-
+            fragments.put(position, fragment);
             players.moveToFirst();
-            if(instantiated) {
-                //TODO: ei toimi
-                for (int i = 0; i < players.getCount(); i++) {
-                    String player = players.getString(1);
-                    ((HoleFragment) fragment).changeScore(player);
-                    players.moveToNext();
-                }
-            }
             return fragment;
 
         }
@@ -300,6 +326,11 @@ public class PlayCourse extends AppCompatActivity {
             return null;
         }
 
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            fragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
 
         @Override
         public int getCount() {
@@ -316,7 +347,7 @@ public class PlayCourse extends AppCompatActivity {
         String throwCount;
         Date date;
 
-        public Scorecards(String playerId, String fairwayId, int gameId, int ob, String throwCount){
+        Scorecards(String playerId, String fairwayId, int gameId, int ob, String throwCount){
             this.playerId = playerId;
             this.fairwayId = fairwayId;
             this.gameId = gameId;
