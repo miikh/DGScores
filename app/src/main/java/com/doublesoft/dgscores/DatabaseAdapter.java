@@ -125,6 +125,15 @@ public class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ? AND PLAYER_ID = ?", new String[]{Long.toString(gameId), Long.toString(playerId)});
     }
 
+    public Cursor getScorecardsReadable(long gameId, long playerId){
+        return db.rawQuery("SELECT Players.Name, Fairway.Name, Throw_Count" +
+                " FROM SCORECARDS" +
+                " LEFT JOIN Players ON Player_ID = Players.ID" +
+                " LEFT JOIN Fairways ON Fairway_ID = Fairways.ID" +
+                " WHERE GAME_ID = ? AND PLAYER_ID = ?" +
+                " GROUP BY Player_ID", new String[]{Long.toString(gameId), Long.toString(playerId)});
+    }
+
     public int[] getScorecardGameIds(){
         Cursor cursor = db.rawQuery("SELECT GAME_ID FROM SCORECARDS GROUP BY GAME_ID", null);
         cursor.moveToFirst();

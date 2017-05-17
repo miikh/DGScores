@@ -43,6 +43,14 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".ViewScorecardsActivity"
+            android:label="@string/title_activity_scorecards"
+            android:parentActivityName=".ScorecardsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ScorecardsActivity" />
+        </activity>
+        <activity
             android:name=".StartCourseActivity"
             android:label="@string/title_activity_play_course"
             android:parentActivityName=".MainActivity">

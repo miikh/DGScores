@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_game"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView_players"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Players: "
+        tools:text="Players: " />
+
+    <TextView
+        android:id="@+id/textView_course"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Course: "
+        tools:text="Course " />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="-------"
+        tools:text="--------------" />
+
+</LinearLayout>
