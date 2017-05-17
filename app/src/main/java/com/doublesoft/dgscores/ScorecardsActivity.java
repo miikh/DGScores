@@ -97,19 +97,20 @@ public class ScorecardsActivity extends AppCompatActivity {
                 //testView.append("throws: " + Integer.toString(throwCount) + "\n");
                 //testView.append("score: " + Integer.toString(throwCount - course.getInt(course.getColumnIndex("PAR")))+ "\n");
                 throwCount = 0;
-                View row = createGameRow(gameId, _players, _course);
-                gameTable.addView(row);
-
-                //TODO: peliriveille omat clickHandlerit, joilla saatas gameId passattua ViewScorecardiin
-                row.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(ScorecardsActivity.this, ViewScorecardsActivity.class);
-                        ScorecardsActivity.this.startActivity(i);
-                    }
-                });
 
             }
+            View row = createGameRow(gameId, _players, _course);
+            gameTable.addView(row);
+
+            //TODO: peliriveille omat clickHandlerit, joilla saatas gameId passattua ViewScorecardiin
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(ScorecardsActivity.this, ViewScorecardsActivity.class);
+                    ScorecardsActivity.this.startActivity(i);
+                }
+            });
+
             i++;
         }
 
