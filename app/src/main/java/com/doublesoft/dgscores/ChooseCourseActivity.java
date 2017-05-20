@@ -66,10 +66,10 @@ public class ChooseCourseActivity extends AppCompatActivity {
 
     }
 
-    class CourseCursorAdapter extends CursorAdapter {
+    private class CourseCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
 
-        public CourseCursorAdapter(Context context, Cursor c, int flags) {
+        CourseCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }

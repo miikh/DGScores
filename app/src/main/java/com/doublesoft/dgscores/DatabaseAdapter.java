@@ -100,7 +100,7 @@ public class DatabaseAdapter {
         Cursor course = getCourse(courseName);
         course.moveToFirst();
         long id = course.getLong(0);
-        return db.rawQuery("SELECT * FROM FAIRWAY WHERE COURSE_ID = ?", new String[]{Long.toString(id)});
+        return db.rawQuery("SELECT * FROM FAIRWAY WHERE COURSE_ID = ? ORDER BY _id ASC", new String[]{Long.toString(id)});
     }
 
     public Cursor getFairways(long id){
@@ -122,7 +122,7 @@ public class DatabaseAdapter {
     public Cursor getScorecardByGameId(long gameId) { return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ?", new String[]{Long.toString(gameId)}); }
 
     public Cursor getScorecardsByGameIdAndPlayerId(long gameId, long playerId){
-        return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ? AND PLAYER_ID = ?", new String[]{Long.toString(gameId), Long.toString(playerId)});
+        return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ? AND PLAYER_ID = ? ORDER BY FAIRWAY_ID ASC", new String[]{Long.toString(gameId), Long.toString(playerId)});
     }
 
     public Cursor getScorecardsReadable(long gameId, long playerId){
@@ -140,6 +140,18 @@ public class DatabaseAdapter {
         int[] ids = new int[cursor.getCount()];
         for(int i=0;i<ids.length;i++){
             ids[i] = cursor.getInt(cursor.getColumnIndex("GAME_ID"));
+            cursor.moveToNext();
+        }
+
+        return ids;
+    }
+
+    public ArrayList<Integer> getScorecardGameIdArrayList(){
+        Cursor cursor = db.rawQuery("SELECT GAME_ID FROM SCORECARDS GROUP BY GAME_ID", null);
+        cursor.moveToFirst();
+        ArrayList<Integer> ids = new ArrayList<>(cursor.getCount());
+        for(int i=0;i<cursor.getCount();i++){
+            ids.add(cursor.getInt(cursor.getColumnIndex("GAME_ID")));
             cursor.moveToNext();
         }
 

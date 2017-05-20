@@ -3,15 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_game"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/textView_players"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Players: "
-        tools:text="Players: " />
 
     <TextView
         android:id="@+id/textView_course"
@@ -21,10 +14,16 @@
         tools:text="Course " />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textView_players"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="-------"
-        tools:text="--------------" />
+        android:text="Players: "
+        tools:text="Players: " />
+
+    <TextView
+        android:id="@+id/textView_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date: " />
 
 </LinearLayout>

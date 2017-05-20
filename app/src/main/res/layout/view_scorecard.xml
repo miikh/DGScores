@@ -5,18 +5,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.doublesoft.dgscores.ViewScorecardsActivity">
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Course name"
+        android:textSize="18sp" />
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView3">
 
         <TableLayout
+            android:id="@+id/scores_table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TableRow
                 android:id="@+id/header_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="2dp"
+                    android:text="Hole" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:text="Par" />
+
+            </TableRow>
+
         </TableLayout>
     </ScrollView>
 
