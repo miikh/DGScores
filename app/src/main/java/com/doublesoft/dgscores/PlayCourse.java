@@ -45,6 +45,7 @@ public class PlayCourse extends AppCompatActivity {
     static boolean instantiated;
     CustomPagerAdapter pagerAdapter;
     static private SparseArray<Fragment> fragments;
+    int gameId;
     Button next;
     Button prev;
 
@@ -54,6 +55,11 @@ public class PlayCourse extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            gameId = savedInstanceState.getInt("gameId");
+        }
+
         setContentView(R.layout.activity_play_course);
         getSupportActionBar().hide();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,7 +130,7 @@ public class PlayCourse extends AppCompatActivity {
             }
         });
 
-       debug_insert = (Button) findViewById(R.id.debug_insertScorecard);
+       /*debug_insert = (Button) findViewById(R.id.debug_insertScorecard);
        debug_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,13 +150,13 @@ public class PlayCourse extends AppCompatActivity {
                 db.insertScorecard(values);
                 Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         holes.moveToFirst();
         players.moveToFirst();
 
         Random rand = new Random(System.currentTimeMillis());
-        int gameId = rand.nextInt(Integer.SIZE - 1);
+        gameId = rand.nextInt(Integer.SIZE - 1);
         scorecards = new HashMap<>();
         while (!holes.isAfterLast()){
             while (!players.isAfterLast()){
@@ -167,6 +173,10 @@ public class PlayCourse extends AppCompatActivity {
         Log.i("Scorecards row count", Integer.toString(scorecards.size()));
 
 
+    }
+
+    public void onSaveInstanceState(Bundle outState){
+        outState.putInt("gameId", gameId);
     }
 
     @Override

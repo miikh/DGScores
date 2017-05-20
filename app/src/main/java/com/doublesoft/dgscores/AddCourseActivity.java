@@ -11,7 +11,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 public class AddCourseActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
@@ -20,9 +23,9 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
     Button saveCourse;
     LinearLayout holeTable;
     Context context;
+    TextView coursePar;
     LinearLayout.LayoutParams x = new TableLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     int defaultHoleCount = 18;
-    int prevCount = defaultHoleCount;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +35,7 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         courseNameView = (EditText)findViewById(R.id.course_name);
         holeNumberPicker = (NumberPicker) findViewById(R.id.holeNumberPicker);
         holeTable = (LinearLayout) findViewById(R.id.holeTable);
+        coursePar = (TextView) findViewById(R.id.textView_coursePar);
 
         holeNumberPicker.setMinValue(1);
         holeNumberPicker.setMaxValue(50);
@@ -47,32 +51,34 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         // Initialize default number of holes
         holeNumberPicker.setValue(defaultHoleCount);
 
+        // Initialize hole rows
         for (int i = 1; i <= defaultHoleCount; i++) {
             View row = createHoleRow(i);
             holeTable.addView(row, x);
         }
 
         holeNumberPicker.setOnValueChangedListener(this);
+
+        updateTotalPar();
     }
 
     @Override
-    public void onValueChange(NumberPicker numberPicker, int j, int j1) {
+    public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
         int holes = holeNumberPicker.getValue();
         holeTable = (LinearLayout) findViewById(R.id.holeTable);
 
         // If count increased, add hole
-        if (prevCount < holes) {
+        if (oldVal < newVal) {
             View row = createHoleRow(holes);
             holeTable.addView(row, x);
         }
 
         // If count decreased, remove last hole
-        else if (prevCount > holes) {
+        else if (oldVal > newVal) {
             int count = holeTable.getChildCount();
             holeTable.removeViewAt(count - 1);
         }
-
-        prevCount = holes;
+        updateTotalPar();
     }
 
     public View createHoleRow(int holeNumber) {
@@ -89,7 +95,36 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         nb.setValue(3);
         nb.setWrapSelectorWheel(false);
 
+        nb.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
+                int par = Integer.parseInt(coursePar.getText().toString());
+
+                if (oldVal < newVal) {
+                    par++;
+                }
+
+                else if (oldVal > newVal) {
+                    par--;
+                }
+                coursePar.setText(Integer.toString(par));
+            }
+        });
+
+
         return row;
+    }
+
+    // Loops values from hole row par pickers and sets total course par
+    private void updateTotalPar() {
+        int holeCount = holeNumberPicker.getValue();
+        int _coursePar = 0;
+        for(int i=0;i<holeCount;i++) {
+            LinearLayout l = (LinearLayout) holeTable.getChildAt(i);
+            int par = ((NumberPicker) l.getChildAt(2)).getValue();
+            _coursePar += par;
+        }
+        coursePar.setText(Integer.toString(_coursePar));
     }
 
     private void setSaveCourseClick(){
@@ -97,7 +132,6 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         int holeCount = holeNumberPicker.getValue();
         ContentValues courseValues = new ContentValues();
         String courseName = courseNameView.getText().toString().trim();
-        int coursePar = 0;
         int courseDistance = 0;
         ContentValues[] fairwaysValues = new ContentValues[holeCount];
         for(int i=0;i<holeCount;i++){
@@ -112,14 +146,13 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
             if(distance != 0) fairwaysValues[i].put("distance", distance);
             if(!name.equals("Hole " + (i+1))) fairwaysValues[i].put("name", name);
 
-            coursePar += par;
             courseDistance += distance;
 
         }
         if(!courseName.equals("")) {
             courseValues.put("name", courseName);
             courseValues.put("hole_count", holeCount);
-            courseValues.put("par", coursePar);
+            courseValues.put("par", Integer.parseInt(coursePar.getText().toString()));
             if (courseDistance > 0) courseValues.put("distance", courseDistance);
 
             DatabaseAdapter db = new DatabaseAdapter(context);
@@ -134,4 +167,5 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
             courseNameView.setError(getString(R.string.course_name_error));
         }
     }
+
 }

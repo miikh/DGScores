@@ -68,6 +68,24 @@
                 android:isScrollContainer="false"
                 android:keepScreenOn="false" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="25dp"
+                android:layout_weight="0.07"
+                android:text="Par"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/textView_coursePar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_weight="0.43"
+                android:textSize="26sp" />
+
 
         </LinearLayout>
 
