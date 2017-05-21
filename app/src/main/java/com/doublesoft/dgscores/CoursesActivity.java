@@ -31,9 +31,9 @@ public class CoursesActivity extends AppCompatActivity {
         LinearLayout layout = (LinearLayout) findViewById(R.id.course_list);
         TextView t = new TextView(context);
         for(int i=0;i<courses.getCount();i++) {
-            t.append("Course name: " + courses.getString(courses.getColumnIndex("NAME")) + "\n" +
-                    "Course holes: " + courses.getString(courses.getColumnIndex("HOLE_COUNT")) + "\n" +
-                    "Course par: " + courses.getString(courses.getColumnIndex("PAR")) + "\n\n");
+            t.append("Name: " + courses.getString(courses.getColumnIndex("NAME")) + "\n" +
+                    "Holes: " + courses.getString(courses.getColumnIndex("HOLE_COUNT")) + "\n" +
+                    "Par: " + courses.getString(courses.getColumnIndex("PAR")) + "\n\n");
             courses.moveToNext();
         }
         layout.addView(t);

@@ -18,8 +18,7 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:scaleType="center"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@android:color/holo_green_dark" />
+        android:src="@android:drawable/ic_input_add" />
 
     <ScrollView
         android:layout_width="match_parent"

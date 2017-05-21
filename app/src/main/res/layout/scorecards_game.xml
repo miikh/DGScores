@@ -10,6 +10,7 @@
         android:id="@+id/textView_course"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Course: "
         tools:text="Course:" />
 
@@ -24,6 +25,7 @@
         android:id="@+id/textView_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:text="Date: " />
 
 </LinearLayout>

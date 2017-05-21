@@ -17,9 +17,8 @@
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add"
         android:scaleType="center"
-        app:backgroundTint="@android:color/holo_green_dark" />
+        android:src="@android:drawable/ic_input_add" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
@@ -109,9 +110,10 @@ public class PlayCourse extends AppCompatActivity {
                 else prev.setEnabled(true);
                 if(position == holeCount) {
                     next.setText("FINISH");
-                    next.setBackgroundColor(getResources().getColor(holo_green_dark));
                 }
-                else next.setText("NEXT");
+                else {
+                    next.setText("NEXT");
+                }
             }
 
             @Override
@@ -145,28 +147,6 @@ public class PlayCourse extends AppCompatActivity {
                 viewPager.setCurrentItem(viewPager.getCurrentItem()-1);
             }
         });
-
-       /*debug_insert = (Button) findViewById(R.id.debug_insertScorecard);
-       debug_insert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContentValues[] values = new ContentValues[scorecards.size()];
-                int i=0;
-                for(HashMap.Entry e : scorecards.entrySet()){
-                    Scorecards sc = (Scorecards) e.getValue();
-                    values[i] = new ContentValues();
-                    values[i].put("PLAYER_ID", Integer.parseInt(sc.playerId));
-                    values[i].put("FAIRWAY_ID", Integer.parseInt(sc.fairwayId));
-                    values[i].put("GAME_ID", sc.gameId);
-                    values[i].put("OB", sc.ob);
-                    values[i].put("THROW_COUNT", Integer.parseInt(sc.throwCount));
-                    values[i].put("DATE", sc.date.toString());
-                    i++;
-                }
-                db.insertScorecard(values);
-                Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
-            }
-        });*/
 
         holes.moveToFirst();
         players.moveToFirst();
