@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -31,6 +33,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+
+import static android.R.color.holo_green_dark;
 
 public class PlayCourse extends AppCompatActivity {
 
@@ -61,6 +65,10 @@ public class PlayCourse extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             gameId = savedInstanceState.getInt("gameId");
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(context)
+                                       .setTitle("Jatka peliä?")
+                                        .setMessage("Haluatko jatkaa peliä?");
+                       dialog.show();
         }
 
         setContentView(R.layout.activity_play_course);
@@ -99,7 +107,10 @@ public class PlayCourse extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if(position == 0) prev.setEnabled(false);
                 else prev.setEnabled(true);
-                if(position == holeCount) next.setText("END");
+                if(position == holeCount) {
+                    next.setText("FINISH");
+                    next.setBackgroundColor(getResources().getColor(holo_green_dark));
+                }
                 else next.setText("NEXT");
             }
 
@@ -120,7 +131,7 @@ public class PlayCourse extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(next.getText().equals("END")){
+                if(next.getText().equals("FINISH")){
                     insertScorecards();
                     onBackPressed();
                 }
