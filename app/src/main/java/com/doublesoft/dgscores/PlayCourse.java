@@ -244,7 +244,7 @@ public class PlayCourse extends AppCompatActivity {
             players.moveToFirst();
             for(int i=0;i<playerId.length;i++){
                 if(playerId[i].equals(players.getString(0)))
-                    addRow(playerList.get(i), holeId, playerId[i]);
+                    addRow(playerList.get(i), holeId, playerId[i], hole);
                 players.moveToNext();
             }
 
@@ -269,7 +269,7 @@ public class PlayCourse extends AppCompatActivity {
             return fragment;
         }
 
-        private void addRow(final String player, final String holeId, final String playerId){
+        private void addRow(final String player, final String holeId, final String playerId, final int hole){
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.fragment_layout);
             LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
             RelativeLayout row = (RelativeLayout) inflater.inflate(R.layout.play_course_row, null, false);
@@ -296,7 +296,7 @@ public class PlayCourse extends AppCompatActivity {
                     scores.put(player, sV);
                     for(int i=0;i<fragments.size();i++){
                         int key = fragments.keyAt(i);
-                        updateOverallScores(fragments.get(key), player, sV);
+                        updateOverallScores(fragments.get(key), player, sV, hole, throwCount);
                     }
                     if(score.getText().equals("1")){
                         subtract.setClickable(false);
@@ -316,7 +316,7 @@ public class PlayCourse extends AppCompatActivity {
                     scores.put(player, sV);
                     for(int i=0;i<fragments.size();i++){
                         int key = fragments.keyAt(i);
-                        updateOverallScores(fragments.get(key), player, sV);
+                        updateOverallScores(fragments.get(key), player, sV, hole, throwCount);
                     }
                     if(score.getText().equals("2")){
                         subtract.setClickable(true);
@@ -328,7 +328,7 @@ public class PlayCourse extends AppCompatActivity {
 
         }
 
-        private void updateOverallScores(Fragment fragment, String player, String score){
+        private void updateOverallScores(Fragment fragment, String player, String score, int hole, String throwCount){
             LinearLayout layout = (LinearLayout)((HoleFragment)fragment).rootView.findViewById(R.id.fragment_layout);
             for(int i=0;i<layout.getChildCount();i++){
                 RelativeLayout row = (RelativeLayout) layout.getChildAt(i);
@@ -336,11 +336,35 @@ public class PlayCourse extends AppCompatActivity {
                 TextView playerView = (TextView) row.findViewById(R.id.row_name);
                 if(playerView.getText().toString().equals(player)) {
                     scoreView.setText("Score: " + score);
-                    return;
+                    break;
                 }
             }
             if(scoreFragment != null){
                 //TODO: päivitä tulos
+                TableRow firstRow = (TableRow)((TableLayout)scoreFragment.rootView.findViewById(R.id.scores_table)).getChildAt(0);
+                int oldThrowCount = 0;
+                for(int i=0;i<playerList.size();i++){
+                    TextView t = (TextView) firstRow.getChildAt(i+2);
+                    if(t.getText().equals(player)){
+                        TableRow row = (TableRow)((TableLayout)scoreFragment.rootView.findViewById(R.id.scores_table)).getChildAt(hole+1);
+                        TextView scoreView = (TextView) row.getChildAt(i+2);
+                        oldThrowCount = Integer.parseInt(scoreView.getText().toString());
+                        scoreView.setText(throwCount);
+                        TableRow lastRow = (TableRow)((TableLayout)scoreFragment.rootView.findViewById(R.id.scores_table)).getChildAt(holeCount+1);
+                        TextView overallScore = (TextView) lastRow.getChildAt(i+2);
+                        String s = overallScore.getText().toString();
+                        StringBuilder b = new StringBuilder();
+                        i = 0;
+                        while(s.charAt(i) != '('){
+                            b.append(s.charAt(i));
+                            i++;
+                        }
+                        int oldScore = Integer.parseInt(b.toString());
+                        if(oldThrowCount < Integer.parseInt(throwCount)) overallScore.setText(String.valueOf(++oldScore) + "(" + score + ")");
+                        else overallScore.setText(String.valueOf(--oldScore) + "(" + score + ")");
+                        break;
+                    }
+                }
             }
         }
 
