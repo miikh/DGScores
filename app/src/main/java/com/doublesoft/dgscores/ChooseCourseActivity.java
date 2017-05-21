@@ -3,6 +3,7 @@ package com.doublesoft.dgscores;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class ChooseCourseActivity extends AppCompatActivity {
     DatabaseAdapter db;
     ListView listView;
     ArrayList<String> players;
+    FloatingActionButton addCourse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,14 @@ public class ChooseCourseActivity extends AppCompatActivity {
         courses = db.getCourses();
         listView = (ListView) findViewById(R.id.choose_course_listview);
 
-        //TODO: lisää addCourse FloatingButton tähän + xml
+        addCourse = (FloatingActionButton) findViewById(R.id.btnAddCoursePlayCourse);
+        addCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ChooseCourseActivity.this, AddCourseActivity.class);
+                ChooseCourseActivity.this.startActivity(i);
+            }
+        });
 
         CourseCursorAdapter adapter = new CourseCursorAdapter(context, courses, 0);
 

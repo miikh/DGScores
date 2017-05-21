@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Course: "
-        tools:text="Course " />
+        tools:text="Course:" />
 
     <TextView
         android:id="@+id/textView_players"
