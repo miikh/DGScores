@@ -40,13 +40,9 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
         courseNameView.setText(courseName);
 
         setHeader();
-
-        //Cursor course = db.getCourse(courseName);
-
         setScores(courseName, gameId);
 
     }
-
 
     void setHeader(){
         TableLayout layout = (TableLayout) findViewById(R.id.scores_table);
@@ -61,8 +57,6 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
             name.setLayoutParams(params);
             header.addView(name);
         }
-
-
     }
 
     void setScores(String courseName, int gameId){

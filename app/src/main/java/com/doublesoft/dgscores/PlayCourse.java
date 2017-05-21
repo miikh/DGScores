@@ -14,12 +14,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +36,7 @@ public class PlayCourse extends AppCompatActivity {
 
     Context context;
     DatabaseAdapter db;
-    Cursor course;
+    static Cursor course;
     static Cursor players;
     static Cursor holes;
     static int holeCount;
@@ -42,10 +45,10 @@ public class PlayCourse extends AppCompatActivity {
     static HashMap<String, String> scores;
     static HashMap<String, TextView> scoreViews;
     ViewPager viewPager;
-    static boolean instantiated;
     CustomPagerAdapter pagerAdapter;
     static private SparseArray<Fragment> fragments;
-    int gameId;
+    static private ScoreFragment scoreFragment;
+    static int gameId;
     Button next;
     Button prev;
 
@@ -71,7 +74,6 @@ public class PlayCourse extends AppCompatActivity {
         playerList = intent.getStringArrayListExtra("players");
         scores = new HashMap<>();
         scoreViews = new HashMap<>();
-        instantiated = false;
         for(String p : playerList){
             scores.put(p, "0");
         }
@@ -87,9 +89,6 @@ public class PlayCourse extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.textView10)).setText(courseName);
 
-        //String[] a = new String[playerList.size()];
-        //players = db.getCoursePlayers(playersList.toArray(a));
-
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -100,6 +99,8 @@ public class PlayCourse extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if(position == 0) prev.setEnabled(false);
                 else prev.setEnabled(true);
+                if(position == holeCount) next.setText("END");
+                else next.setText("NEXT");
             }
 
             @Override
@@ -119,6 +120,10 @@ public class PlayCourse extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(next.getText().equals("END")){
+                    insertScorecards();
+                    onBackPressed();
+                }
                 viewPager.setCurrentItem(viewPager.getCurrentItem()+1);
             }
         });
@@ -170,11 +175,29 @@ public class PlayCourse extends AppCompatActivity {
             holes.moveToNext();
         }
 
-        Log.i("Scorecards row count", Integer.toString(scorecards.size()));
-
+        //Log.i("Scorecards row count", Integer.toString(scorecards.size()));
 
     }
 
+    void insertScorecards(){
+        ContentValues[] values = new ContentValues[scorecards.size()];
+        int i=0;
+        for(HashMap.Entry e : scorecards.entrySet()){
+            Scorecards sc = (Scorecards) e.getValue();
+            values[i] = new ContentValues();
+            values[i].put("PLAYER_ID", Integer.parseInt(sc.playerId));
+            values[i].put("FAIRWAY_ID", Integer.parseInt(sc.fairwayId));
+            values[i].put("GAME_ID", sc.gameId);
+            values[i].put("OB", sc.ob);
+            values[i].put("THROW_COUNT", Integer.parseInt(sc.throwCount));
+            values[i].put("DATE", sc.date.toString());
+            i++;
+        }
+        db.insertScorecard(values);
+        Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState){
         outState.putInt("gameId", gameId);
     }
@@ -182,7 +205,12 @@ public class PlayCourse extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //instantiated = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //TODO: shared preferences gameId ja scorecards insert tännne
     }
 
     public static class HoleFragment extends Fragment {
@@ -196,7 +224,6 @@ public class PlayCourse extends AppCompatActivity {
 
             Bundle b = getArguments();
             int hole = b.getInt("hole");
-            //int par = b.getInt("par");
             String holeId = b.getString("holeId");
             String[] playerId = b.getStringArray("playerId");
             TextView holeView = (TextView) rootView.findViewById(R.id.textView2);
@@ -216,7 +243,6 @@ public class PlayCourse extends AppCompatActivity {
         public static HoleFragment newInstance(int position, Cursor hole){
 
             HoleFragment fragment = new HoleFragment();
-            //int par = Integer.parseInt(hole.getString(hole.getColumnIndex("PAR")));
             String holeId = hole.getString(0);
             players.moveToFirst();
             String playerId[] = new String[players.getCount()];
@@ -226,7 +252,6 @@ public class PlayCourse extends AppCompatActivity {
             }
             Bundle b = new Bundle();
             b.putInt("hole", position);
-            //b.putInt("par", par);
             b.putString("holeId", holeId);
             b.putStringArray("playerId", playerId);
             fragment.setArguments(b);
@@ -303,8 +328,124 @@ public class PlayCourse extends AppCompatActivity {
                     return;
                 }
             }
+            if(scoreFragment != null){
+                //TODO: päivitä tulos
+            }
         }
 
+    }
+
+    public static class ScoreFragment extends Fragment{
+        View rootView;
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            rootView = inflater.inflate(R.layout.view_scorecard, container, false);
+            TextView t = (TextView) rootView.findViewById(R.id.textView3);
+            t.setText("Overall scores");
+            setHeader();
+            setScores();
+            return rootView;
+        }
+
+        public static ScoreFragment newInstance(int position){
+
+            ScoreFragment fragment = new ScoreFragment();
+
+            return fragment;
+        }
+
+        void setHeader(){
+            TableLayout layout = (TableLayout) rootView.findViewById(R.id.scores_table);
+            TableRow header = (TableRow) layout.getChildAt(0);
+            LinearLayout.LayoutParams params = new TableRow.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+            params.setMargins(5,0,5,0);
+
+            for(String s : playerList){
+                TextView name = new TextView(getContext());
+                name.setText(s);
+                name.setLayoutParams(params);
+                header.addView(name);
+            }
+        }
+
+        void setScores(){
+            holes.moveToFirst();
+            TableLayout layout = (TableLayout) rootView.findViewById(R.id.scores_table);
+            TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+            params.setMargins(5,0,0,0);
+            for(int i=0;i<holes.getCount();i++){
+                TableRow row = new TableRow(getContext());
+                TextView idView = new TextView(getContext());
+                String id = Integer.toString(i+1);
+                idView.setText(id);
+                idView.setLayoutParams(params);
+                idView.setGravity(Gravity.CENTER);
+                row.addView(idView);
+                TextView parView = new TextView(getContext());
+                parView.setText(holes.getString(holes.getColumnIndex("PAR")));
+                parView.setGravity(Gravity.CENTER);
+                params.gravity = Gravity.NO_GRAVITY;
+                params.setMargins(0,0,5,0);
+                parView.setLayoutParams(params);
+                row.addView(parView);
+                for(int j=0;j<playerList.size();j++){
+                    TextView t = new TextView(getContext());
+                    t.setText(parView.getText());
+                    t.setGravity(Gravity.CENTER);
+                    row.addView(t);
+                }
+                layout.addView(row);
+                holes.moveToNext();
+            }
+
+            TableRow lastRow = new TableRow(getContext());
+            lastRow.addView(new TextView(getContext()));
+            TextView par = new TextView(getContext());
+            course.moveToFirst();
+            par.setText(course.getString(course.getColumnIndex("PAR")));
+            par.setGravity(Gravity.CENTER);
+            lastRow.addView(par);
+            layout.addView(lastRow);
+            for(int i=0;i<playerList.size();i++){
+                TextView t = new TextView(getContext());
+                t.setText(par.getText());
+                t.setGravity(Gravity.CENTER);
+                lastRow.addView(t);
+            }
+
+            int i=2;
+            players.moveToFirst();
+            while(!players.isAfterLast()){
+                String playerId = players.getString(0);
+                holes.moveToFirst();
+                int j = 1;
+                while(!holes.isAfterLast()){
+                    String holeId = holes.getString(0);
+                    TableRow row = (TableRow)layout.getChildAt(j);
+                    TextView score = (TextView) row.getChildAt(i);
+                    score.setText(scorecards.get(playerId+holeId).throwCount);
+                    holes.moveToNext();
+                    j++;
+                }
+                players.moveToNext();
+                i++;
+            }
+
+            i=2;
+            for(int k=0;k<playerList.size();k++) {
+                int throwCount = 0;
+                for (int j = 0; j < holeCount; j++) {
+                    TableRow row = (TableRow) layout.getChildAt(j + 1);
+                    TextView scoreView = (TextView) row.getChildAt(i);
+                    throwCount += Integer.parseInt(scoreView.getText().toString());
+                }
+                int score = throwCount - Integer.parseInt(par.getText().toString());
+                ((TextView)lastRow.getChildAt(i)).setText(String.valueOf(throwCount) + "(" + String.valueOf(score) + ")");
+                i++;
+            }
+        }
     }
 
     private class CustomPagerAdapter extends FragmentStatePagerAdapter {
@@ -319,10 +460,9 @@ public class PlayCourse extends AppCompatActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
-            fragments.put(position, fragment);
-            players.moveToFirst();
+            if (position < NUM_ITEMS) fragments.put(position, fragment);
+            else if(position == NUM_ITEMS) scoreFragment = (ScoreFragment) fragment;
             return fragment;
-
         }
 
         @Override
@@ -334,18 +474,20 @@ public class PlayCourse extends AppCompatActivity {
                 }
                 holes.moveToNext();
             }
+            if(NUM_ITEMS == position) return ScoreFragment.newInstance(position);
             return null;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            fragments.remove(position);
+            if(position < NUM_ITEMS) fragments.remove(position);
+            else if(position == NUM_ITEMS) scoreFragment = null;
             super.destroyItem(container, position, object);
         }
 
         @Override
         public int getCount() {
-            return NUM_ITEMS;
+            return NUM_ITEMS+1;
         }
 
     }
@@ -366,30 +508,6 @@ public class PlayCourse extends AppCompatActivity {
             this.throwCount = throwCount;
             this.date = Calendar.getInstance().getTime();
         }
-
-        public String getPlayerId() {
-            return playerId;
-        }
-        public String getFairwayId() {
-            return fairwayId;
-        }
-        public int getGameId() {
-            return gameId;
-        }
-        public int getOb() {
-            return ob;
-        }
-        public String getThrowCount() {
-            return throwCount;
-        }
-        public Date getDate() {
-            return date;
-        }
-
-        public void setDate() {
-            this.date = Calendar.getInstance().getTime();
-        }
     }
-
 
 }
