@@ -2,6 +2,7 @@ package com.doublesoft.dgscores;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -159,7 +160,8 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
             db.open();
             db.insertCourse(courseValues, fairwaysValues);
             db.close();
-
+            Intent intent = new Intent();
+            intent.putExtra("requestCode", 0);
             Toast.makeText(context, "Course " + courseName + " added", Toast.LENGTH_SHORT).show();
             this.finish();
         }
@@ -168,4 +170,10 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("requestCode", 1);
+        super.onBackPressed();
+    }
 }

@@ -1,13 +1,13 @@
 package com.doublesoft.dgscores;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,15 +27,12 @@ import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
-
-import static android.R.color.holo_green_dark;
 
 public class PlayCourse extends AppCompatActivity {
 
@@ -56,6 +53,8 @@ public class PlayCourse extends AppCompatActivity {
     static int gameId;
     Button next;
     Button prev;
+    boolean newGame;
+    boolean finished;
 
     //DEBUG
     Button debug_insert;
@@ -63,7 +62,12 @@ public class PlayCourse extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_play_course);
+        getSupportActionBar().hide();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        context = this;
+        finished = false;
         if (savedInstanceState != null) {
             gameId = savedInstanceState.getInt("gameId");
             final AlertDialog.Builder dialog = new AlertDialog.Builder(context)
@@ -72,32 +76,96 @@ public class PlayCourse extends AppCompatActivity {
                        dialog.show();
         }
 
-        setContentView(R.layout.activity_play_course);
-        getSupportActionBar().hide();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        SharedPreferences sp = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+        int sharedPreference = sp.getInt("gameId", 0);
+        if(sharedPreference > 0){
+            gameId = sharedPreference;
+            newGame = false;
+            Log.i("sharedPreference", "gameId:" + String.valueOf(gameId));
+            db = new DatabaseAdapter(context);
+            db.open();
+            players = db.getCoursePlayersByGameId(gameId);
+            players.moveToFirst();
+            course = db.getCourseByGameId(gameId);
+            course.moveToFirst();
+            playerList = new ArrayList<>();
+            scores = new HashMap<>();
+            scoreViews = new HashMap<>();
+            while(!players.isAfterLast()){
+                playerList.add(players.getString(1));
+                Cursor c = db.getScorecardsByGameIdAndPlayerId(gameId, players.getLong(0));
+                c.moveToFirst();
+                int throwCount = 0;
+                while(!c.isAfterLast()){
+                    throwCount += c.getInt(c.getColumnIndex("THROW_COUNT"));
+                    c.moveToNext();
+                }
+                throwCount -= course.getInt(course.getColumnIndex("PAR"));
+                scores.put(players.getString(1), String.valueOf(throwCount));
+                players.moveToNext();
+            }
 
-        context = this;
 
-        Intent intent = this.getIntent();
-        String courseName = intent.getStringExtra("courseName");
-        playerList = intent.getStringArrayListExtra("players");
-        scores = new HashMap<>();
-        scoreViews = new HashMap<>();
-        for(String p : playerList){
-            scores.put(p, "0");
+            holeCount = Integer.parseInt(course.getString(course.getColumnIndex("HOLE_COUNT")));
+            ((TextView) findViewById(R.id.textView10)).setText(course.getString(course.getColumnIndex("NAME")));
+
+            holes = db.getFairways(course.getString(course.getColumnIndex("NAME")));
+            holes.moveToFirst();
+            players.moveToFirst();
+            scorecards = new HashMap<>();
+
+            while (!holes.isAfterLast()){
+                while (!players.isAfterLast()){
+                    String pId = players.getString(0);
+                    String hId = holes.getString(0);
+                    String tC = String.valueOf(db.getThrowCount(pId, hId, String.valueOf(gameId)));
+                    scorecards.put((pId+hId), new Scorecards(pId, hId, gameId, 0, tC));
+                    players.moveToNext();
+                }
+                players.moveToFirst();
+                holes.moveToNext();
+            }
         }
+        else {
+            newGame = true;
+            Intent intent = this.getIntent();
+            String courseName = intent.getStringExtra("courseName");
+            playerList = intent.getStringArrayListExtra("players");
+            scores = new HashMap<>();
+            scoreViews = new HashMap<>();
+            for (String p : playerList) {
+                scores.put(p, "0");
+            }
 
-        db = new DatabaseAdapter(context);
-        db.open();
-        course = db.getCourse(courseName);
-        course.moveToFirst();
-        players = db.getCoursePlayers(playerList);
-        holes = db.getFairways(courseName);
+            db = new DatabaseAdapter(context);
+            db.open();
+            course = db.getCourse(courseName);
+            course.moveToFirst();
+            players = db.getCoursePlayers(playerList);
+            holes = db.getFairways(courseName);
 
-        holeCount = Integer.parseInt(course.getString(course.getColumnIndex("HOLE_COUNT")));
+            holeCount = Integer.parseInt(course.getString(course.getColumnIndex("HOLE_COUNT")));
 
-        ((TextView) findViewById(R.id.textView10)).setText(courseName);
+            ((TextView) findViewById(R.id.textView10)).setText(courseName);
 
+            holes.moveToFirst();
+            players.moveToFirst();
+
+            Random rand = new Random(System.currentTimeMillis());
+            gameId = rand.nextInt(Integer.SIZE - 1)+1;
+            scorecards = new HashMap<>();
+            while (!holes.isAfterLast()){
+                while (!players.isAfterLast()){
+                    String pId = players.getString(0);
+                    String hId = holes.getString(0);
+                    String tC = holes.getString(holes.getColumnIndex("PAR"));
+                    scorecards.put((pId+hId), new Scorecards(pId, hId, gameId, 0, tC));
+                    players.moveToNext();
+                }
+                players.moveToFirst();
+                holes.moveToNext();
+            }
+        }
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -134,8 +202,7 @@ public class PlayCourse extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(next.getText().equals("FINISH")){
-                    insertScorecards();
-                    onBackPressed();
+                    showFinishDialog();
                 }
                 viewPager.setCurrentItem(viewPager.getCurrentItem()+1);
             }
@@ -148,29 +215,9 @@ public class PlayCourse extends AppCompatActivity {
             }
         });
 
-        holes.moveToFirst();
-        players.moveToFirst();
-
-        Random rand = new Random(System.currentTimeMillis());
-        gameId = rand.nextInt(Integer.SIZE - 1);
-        scorecards = new HashMap<>();
-        while (!holes.isAfterLast()){
-            while (!players.isAfterLast()){
-                String pId = players.getString(0);
-                String hId = holes.getString(0);
-                String tC = holes.getString(holes.getColumnIndex("PAR"));
-                scorecards.put((pId+hId), new Scorecards(pId, hId, gameId, 0, tC));
-                players.moveToNext();
-            }
-            players.moveToFirst();
-            holes.moveToNext();
-        }
-
-        //Log.i("Scorecards row count", Integer.toString(scorecards.size()));
-
     }
 
-    void insertScorecards(){
+    void insertOrUpdateScorecards(){
         ContentValues[] values = new ContentValues[scorecards.size()];
         int i=0;
         for(HashMap.Entry e : scorecards.entrySet()){
@@ -184,8 +231,9 @@ public class PlayCourse extends AppCompatActivity {
             values[i].put("DATE", sc.date.toString());
             i++;
         }
-        db.insertScorecard(values);
-        Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
+        if(newGame) db.insertScorecard(values);
+        else db.updateScorecards(values);
+        //Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -200,8 +248,22 @@ public class PlayCourse extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        SharedPreferences.Editor spEditor = getSharedPreferences("sharedPreferences", MODE_PRIVATE).edit();
+        if(finished) {
+            spEditor.putInt("gameId", 0);
+            Intent i = new Intent();
+            i.putExtra("gameId", 0);
+            setResult(Activity.RESULT_OK, i);
+        }
+        else spEditor.putInt("gameId", gameId);
+        spEditor.commit();
+        insertOrUpdateScorecards();
         super.onStop();
-        //TODO: shared preferences gameId ja scorecards insert tännne
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     public static class HoleFragment extends Fragment {
@@ -227,7 +289,6 @@ public class PlayCourse extends AppCompatActivity {
                     addRow(playerList.get(i), holeId, playerId[i], hole);
                 players.moveToNext();
             }
-
             return rootView;
         }
 
@@ -320,9 +381,8 @@ public class PlayCourse extends AppCompatActivity {
                 }
             }
             if(scoreFragment != null){
-                //TODO: päivitä tulos
                 TableRow firstRow = (TableRow)((TableLayout)scoreFragment.rootView.findViewById(R.id.scores_table)).getChildAt(0);
-                int oldThrowCount = 0;
+                int oldThrowCount;
                 for(int i=0;i<playerList.size();i++){
                     TextView t = (TextView) firstRow.getChildAt(i+2);
                     if(t.getText().equals(player)){
@@ -364,11 +424,8 @@ public class PlayCourse extends AppCompatActivity {
             return rootView;
         }
 
-        public static ScoreFragment newInstance(int position){
-
-            ScoreFragment fragment = new ScoreFragment();
-
-            return fragment;
+        public static ScoreFragment newInstance(){
+            return new ScoreFragment();
         }
 
         void setHeader(){
@@ -489,7 +546,7 @@ public class PlayCourse extends AppCompatActivity {
                 }
                 holes.moveToNext();
             }
-            if(NUM_ITEMS == position) return ScoreFragment.newInstance(position);
+            if(NUM_ITEMS == position) return ScoreFragment.newInstance();
             return null;
         }
 
@@ -523,6 +580,27 @@ public class PlayCourse extends AppCompatActivity {
             this.throwCount = throwCount;
             this.date = Calendar.getInstance().getTime();
         }
+    }
+
+    void showFinishDialog(){
+        new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle("Finish course")
+                .setCancelable(false)
+                .setMessage("Are you sure you want to finish course?")
+                .setPositiveButton("Finish", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finished = true;
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {}
+                })
+                .show();
+
     }
 
 }

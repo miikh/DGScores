@@ -24,6 +24,7 @@ public class ChooseCourseActivity extends AppCompatActivity {
     Context context;
     Cursor courses;
     DatabaseAdapter db;
+    CourseCursorAdapter adapter;
     ListView listView;
     ArrayList<String> players;
     FloatingActionButton addCourse;
@@ -46,16 +47,7 @@ public class ChooseCourseActivity extends AppCompatActivity {
         courses = db.getCourses();
         listView = (ListView) findViewById(R.id.choose_course_listview);
 
-        addCourse = (FloatingActionButton) findViewById(R.id.btnAddCoursePlayCourse);
-        addCourse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(ChooseCourseActivity.this, AddCourseActivity.class);
-                ChooseCourseActivity.this.startActivity(i);
-            }
-        });
-
-        CourseCursorAdapter adapter = new CourseCursorAdapter(context, courses, 0);
+        adapter = new CourseCursorAdapter(context, courses, 0);
 
         listView.setAdapter(adapter);
 
@@ -66,13 +58,31 @@ public class ChooseCourseActivity extends AppCompatActivity {
                 String[] s = ((TextView) l.getChildAt(0)).getText().toString().split(":");
                 String courseName = s[1].trim();
                 Intent i = new Intent(ChooseCourseActivity.this, PlayCourse.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.putExtra("courseName", courseName);
                 i.putStringArrayListExtra("players", players);
-                context.startActivity(i);
+                startActivity(i);
             }
         });
 
+        addCourse = (FloatingActionButton) findViewById(R.id.btnAddCoursePlayCourse);
+        addCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ChooseCourseActivity.this, AddCourseActivity.class);
+                ChooseCourseActivity.this.startActivityForResult(i, 0);
+            }
+        });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            courses = db.getCourses();
+            adapter.swapCursor(courses);
+        }
     }
 
     private class CourseCursorAdapter extends CursorAdapter {

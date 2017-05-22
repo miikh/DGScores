@@ -115,12 +115,13 @@ public class ScorecardsActivity extends AppCompatActivity {
             // set course name
             Cursor[] scoresByPlayers = gameScoresByPlayers.get(gameId);
             scoresByPlayers[0].moveToFirst();
-            int holeId = scoresByPlayers[0].getInt(scoresByPlayers[0].getColumnIndex("FAIRWAY_ID"));
+            long holeId = scoresByPlayers[0].getLong(scoresByPlayers[0].getColumnIndex("FAIRWAY_ID"));
             Cursor course = db.getCourse(holeId);
             course.moveToFirst();
-            courseNameView.append(course.getString(course.getColumnIndex("NAME")));
+            courseNameView.setText("Course: " + course.getString(course.getColumnIndex("NAME")));
 
             // set players and scores
+            playersView.setText("Players: ");
             int throwCount = 0;
             for(Cursor c : scoresByPlayers){
                 c.moveToFirst();
@@ -136,7 +137,7 @@ public class ScorecardsActivity extends AppCompatActivity {
 
                 int overallScore = throwCount - course.getInt(course.getColumnIndex("PAR"));
 
-                String playerInfo = playerName + " (" + Integer.toString(overallScore) + "), ";
+                String playerInfo = playerName + " (" + Integer.toString(overallScore) + ") ";
                 playersView.append(playerInfo);
 
                 throwCount = 0;
@@ -148,7 +149,7 @@ public class ScorecardsActivity extends AppCompatActivity {
                 scoresByPlayers[0].moveToFirst();
                 SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm");
                 Date date = dbDate.parse(scoresByPlayers[0].getString(scoresByPlayers[0].getColumnIndex("DATE")));
-                dateView.append(format.format(date));
+                dateView.setText("Date: " + format.format(date));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -159,7 +160,7 @@ public class ScorecardsActivity extends AppCompatActivity {
                     int gameId = gameIds.get(position);
                     Cursor[] scoresByPlayers = gameScoresByPlayers.get(gameId);
                     scoresByPlayers[0].moveToFirst();
-                    int holeId = scoresByPlayers[0].getInt(scoresByPlayers[0].getColumnIndex("FAIRWAY_ID"));
+                    long holeId = scoresByPlayers[0].getInt(scoresByPlayers[0].getColumnIndex("FAIRWAY_ID"));
                     Cursor course = db.getCourse(holeId);
                     course.moveToFirst();
                     String courseName = course.getString(course.getColumnIndex("NAME"));
