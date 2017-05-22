@@ -174,7 +174,7 @@ public class PlayCourse extends AppCompatActivity {
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                insertScorecards();
+                insertOrUpdateScorecards();
                 onBackPressed();
             }
         });
