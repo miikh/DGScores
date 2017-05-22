@@ -56,8 +56,9 @@ public class PlayCourse extends AppCompatActivity {
     boolean newGame;
     boolean finished;
 
-    //DEBUG
-    Button debug_insert;
+    Button finishButton;
+    LinearLayout finishLayout;
+    TextView winnerText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +167,18 @@ public class PlayCourse extends AppCompatActivity {
                 holes.moveToNext();
             }
         }
+        finishLayout = (LinearLayout) findViewById(R.id.finishLayout);
+        winnerText = (TextView) findViewById(R.id.winnerText);
+
+        finishButton = (Button) findViewById(R.id.btnFinish);
+        finishButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                insertScorecards();
+                onBackPressed();
+            }
+        });
+
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -177,10 +190,12 @@ public class PlayCourse extends AppCompatActivity {
                 if(position == 0) prev.setEnabled(false);
                 else prev.setEnabled(true);
                 if(position == holeCount) {
-                    next.setText("FINISH");
+                   finishLayout.setVisibility(View.VISIBLE);
+                    next.setEnabled(false);
                 }
                 else {
-                    next.setText("NEXT");
+                    finishLayout.setVisibility(View.INVISIBLE);
+                    next.setEnabled(true);
                 }
             }
 
@@ -418,7 +433,7 @@ public class PlayCourse extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.view_scorecard, container, false);
             TextView t = (TextView) rootView.findViewById(R.id.textView3);
-            t.setText("Overall scores");
+            t.setText("Final scores");
             setHeader();
             setScores();
             return rootView;
@@ -442,11 +457,11 @@ public class PlayCourse extends AppCompatActivity {
             }
         }
 
-        void setScores(){
+        private void setScores(){
             holes.moveToFirst();
             TableLayout layout = (TableLayout) rootView.findViewById(R.id.scores_table);
             TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-            params.setMargins(5,0,0,0);
+            params.setMargins(5,0,5,0);
             for(int i=0;i<holes.getCount();i++){
                 TableRow row = new TableRow(getContext());
                 TextView idView = new TextView(getContext());
@@ -459,7 +474,7 @@ public class PlayCourse extends AppCompatActivity {
                 parView.setText(holes.getString(holes.getColumnIndex("PAR")));
                 parView.setGravity(Gravity.CENTER);
                 params.gravity = Gravity.NO_GRAVITY;
-                params.setMargins(0,0,5,0);
+                params.setMargins(5,0,5,0);
                 parView.setLayoutParams(params);
                 row.addView(parView);
                 for(int j=0;j<playerList.size();j++){
@@ -517,6 +532,7 @@ public class PlayCourse extends AppCompatActivity {
                 ((TextView)lastRow.getChildAt(i)).setText(String.valueOf(throwCount) + "(" + String.valueOf(score) + ")");
                 i++;
             }
+            //TODO winnerText.setText(playerName);
         }
     }
 
