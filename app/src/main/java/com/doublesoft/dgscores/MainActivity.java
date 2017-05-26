@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                             .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Intent i = new Intent(MainActivity.this, PlayCourse.class);
+                                    Intent i = new Intent(MainActivity.this, PlayCourseActivity.class);
                                     startActivityForResult(i, 1);
                                 }
                             })
@@ -102,9 +102,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1){
-            btnPlay.setText(getResources().getString(R.string.title_activity_play_course));
             //TODO: Intent data tulee nullina
-            if(resultCode == Activity.RESULT_OK) gameId = data.getIntExtra("gameId",0);
+            if(resultCode == Activity.RESULT_OK) {
+                gameId = data.getIntExtra("gameId", 0);
+                btnPlay.setText(getResources().getString(R.string.title_activity_play_course));
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

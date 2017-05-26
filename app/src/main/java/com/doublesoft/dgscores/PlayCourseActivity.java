@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
-public class PlayCourse extends AppCompatActivity {
+public class PlayCourseActivity extends AppCompatActivity {
 
     Context context;
     DatabaseAdapter db;
@@ -55,6 +55,7 @@ public class PlayCourse extends AppCompatActivity {
     Button prev;
     boolean newGame;
     boolean finished;
+    boolean onBackPressed;
 
     Button finishButton;
     LinearLayout finishLayout;
@@ -69,13 +70,17 @@ public class PlayCourse extends AppCompatActivity {
 
         context = this;
         finished = false;
+        onBackPressed = false;
+        /*
         if (savedInstanceState != null) {
+            newGame = false;
             gameId = savedInstanceState.getInt("gameId");
             final AlertDialog.Builder dialog = new AlertDialog.Builder(context)
                                        .setTitle("Jatka peliä?")
                                         .setMessage("Haluatko jatkaa peliä?");
                        dialog.show();
         }
+        */
 
         SharedPreferences sp = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
         int sharedPreference = sp.getInt("gameId", 0);
@@ -174,8 +179,9 @@ public class PlayCourse extends AppCompatActivity {
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                insertOrUpdateScorecards();
-                onBackPressed();
+                //finished = true;
+                //finish();
+                showFinishDialog();
             }
         });
 
@@ -190,7 +196,7 @@ public class PlayCourse extends AppCompatActivity {
                 if(position == 0) prev.setEnabled(false);
                 else prev.setEnabled(true);
                 if(position == holeCount) {
-                   finishLayout.setVisibility(View.VISIBLE);
+                    finishLayout.setVisibility(View.VISIBLE);
                     next.setEnabled(false);
                 }
                 else {
@@ -246,7 +252,10 @@ public class PlayCourse extends AppCompatActivity {
             values[i].put("DATE", sc.date.toString());
             i++;
         }
-        if(newGame) db.insertScorecard(values);
+        if(newGame) {
+            db.insertScorecard(values);
+            newGame = false;
+        }
         else db.updateScorecards(values);
         //Toast.makeText(context, "Scorecards inserted!", Toast.LENGTH_SHORT).show();
     }
@@ -264,21 +273,30 @@ public class PlayCourse extends AppCompatActivity {
     @Override
     protected void onStop() {
         SharedPreferences.Editor spEditor = getSharedPreferences("sharedPreferences", MODE_PRIVATE).edit();
+        Intent i = new Intent(PlayCourseActivity.this, MainActivity.class);
         if(finished) {
             spEditor.putInt("gameId", 0);
-            Intent i = new Intent();
             i.putExtra("gameId", 0);
             setResult(Activity.RESULT_OK, i);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
+        else if(onBackPressed){
+            spEditor.putInt("gameId", gameId);
+            i.putExtra("gameId", gameId);
+            setResult(Activity.RESULT_OK, i);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
         else spEditor.putInt("gameId", gameId);
-        spEditor.commit();
+        spEditor.apply();
         insertOrUpdateScorecards();
         super.onStop();
+        if(finished || onBackPressed) startActivity(i);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        onBackPressed = true;
     }
 
     public static class HoleFragment extends Fragment {

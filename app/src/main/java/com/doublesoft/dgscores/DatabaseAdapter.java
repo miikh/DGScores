@@ -149,7 +149,7 @@ class DatabaseAdapter {
     }
 
     int[] getScorecardGameIds(){
-        Cursor cursor = db.rawQuery("SELECT GAME_ID FROM SCORECARDS GROUP BY GAME_ID", null);
+        Cursor cursor = db.rawQuery("SELECT GAME_ID FROM SCORECARDS GROUP BY GAME_ID ORDER BY datetime(DATE) DESC", null);
         cursor.moveToFirst();
         int[] ids = new int[cursor.getCount()];
         for(int i=0;i<ids.length;i++){

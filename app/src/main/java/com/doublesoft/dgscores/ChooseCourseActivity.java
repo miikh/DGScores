@@ -1,5 +1,6 @@
 package com.doublesoft.dgscores;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,9 +14,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -57,7 +56,7 @@ public class ChooseCourseActivity extends AppCompatActivity {
                 LinearLayout l = (LinearLayout) view;
                 String[] s = ((TextView) l.getChildAt(0)).getText().toString().split(":");
                 String courseName = s[1].trim();
-                Intent i = new Intent(ChooseCourseActivity.this, PlayCourse.class);
+                Intent i = new Intent(ChooseCourseActivity.this, PlayCourseActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.putExtra("courseName", courseName);
                 i.putStringArrayListExtra("players", players);
@@ -83,6 +82,14 @@ public class ChooseCourseActivity extends AppCompatActivity {
             courses = db.getCourses();
             adapter.swapCursor(courses);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent();
+        i.putExtra("gameId", 0);
+        setResult(Activity.RESULT_OK, i);
     }
 
     private class CourseCursorAdapter extends CursorAdapter {
