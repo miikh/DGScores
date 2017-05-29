@@ -421,6 +421,7 @@ public class PlayCourseActivity extends AppCompatActivity {
                     break;
                 }
             }
+            //TODO: jostain syystä ehtoon mennään välillä vaikka scorefragmenttiä ei pitäisi olla
             if(scoreFragment != null){
                 TableRow firstRow = (TableRow)((TableLayout)scoreFragment.rootView.findViewById(R.id.scores_table)).getChildAt(0);
                 int oldThrowCount;

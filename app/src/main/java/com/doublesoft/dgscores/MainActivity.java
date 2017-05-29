@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     new AlertDialog.Builder(context)
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .setTitle("Continue course?")
-                            .setMessage("Unfinished course found!\nWant to continue course?")
+                            .setMessage("Unfinished course found!\nWant to continue course?\nUnfinished course will be lost!")
                             .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -58,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
                             .setNegativeButton("Start New Game", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    DatabaseAdapter db = new DatabaseAdapter(context);
+                                    db.open();
+                                    db.deleteByGameId(gameId);
+                                    db.close();
                                     SharedPreferences.Editor spEditor = getSharedPreferences("sharedPreferences", MODE_PRIVATE).edit();
                                     spEditor.putInt("gameId", 0);
                                     spEditor.apply();
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == NEW_GAME){
-            //TODO: lifecycle
             if(resultCode == Activity.RESULT_OK) {
                 btnPlay.setText(getResources().getString(R.string.title_activity_play_course));
                 gameId = 0;
