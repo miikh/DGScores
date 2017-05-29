@@ -82,6 +82,7 @@ public class PlayCourseActivity extends AppCompatActivity {
         }
         */
 
+        // Jos vanha peli löytyy
         SharedPreferences sp = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
         int sharedPreference = sp.getInt("gameId", 0);
         if(sharedPreference > 0){
@@ -132,7 +133,7 @@ public class PlayCourseActivity extends AppCompatActivity {
                 holes.moveToNext();
             }
         }
-        else {
+        else { // Jos pelataan uusi peli
             newGame = true;
             Intent intent = this.getIntent();
             String courseName = intent.getStringExtra("courseName");
@@ -158,7 +159,7 @@ public class PlayCourseActivity extends AppCompatActivity {
             players.moveToFirst();
 
             Random rand = new Random(System.currentTimeMillis());
-            gameId = rand.nextInt(Integer.SIZE - 1)+1;
+            gameId = rand.nextInt(Integer.MAX_VALUE) + 1;
             scorecards = new HashMap<>();
             while (!holes.isAfterLast()){
                 while (!players.isAfterLast()){
@@ -275,28 +276,35 @@ public class PlayCourseActivity extends AppCompatActivity {
         SharedPreferences.Editor spEditor = getSharedPreferences("sharedPreferences", MODE_PRIVATE).edit();
         Intent i = new Intent(PlayCourseActivity.this, MainActivity.class);
         if(finished) {
+            /*
             spEditor.putInt("gameId", 0);
             i.putExtra("gameId", 0);
-            setResult(Activity.RESULT_OK, i);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            setResult(Activity.RESULT_OK, i);
+            */
         }
         else if(onBackPressed){
+            /*
             spEditor.putInt("gameId", gameId);
             i.putExtra("gameId", gameId);
-            setResult(Activity.RESULT_OK, i);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            setResult(Activity.RESULT_CANCELED, i);
+            */
         }
-        else spEditor.putInt("gameId", gameId);
+        //else spEditor.putInt("gameId", gameId);
+        if(!finished && !onBackPressed) spEditor.putInt("gameId", gameId);
         spEditor.apply();
         insertOrUpdateScorecards();
+        //if(finished || onBackPressed) startActivity(i);
         super.onStop();
-        if(finished || onBackPressed) startActivity(i);
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         onBackPressed = true;
+        Intent i = setActivityResults(false);
+        super.onBackPressed();
+        startActivity(i);
     }
 
     public static class HoleFragment extends Fragment {
@@ -477,6 +485,7 @@ public class PlayCourseActivity extends AppCompatActivity {
 
         private void setScores(){
             holes.moveToFirst();
+
             TableLayout layout = (TableLayout) rootView.findViewById(R.id.scores_table);
             TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
             params.setMargins(5,0,5,0);
@@ -626,7 +635,9 @@ public class PlayCourseActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finished = true;
+                        Intent i = setActivityResults(finished);
                         finish();
+                        startActivity(i);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -634,7 +645,25 @@ public class PlayCourseActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {}
                 })
                 .show();
+    }
 
+    Intent setActivityResults(boolean finished){
+        SharedPreferences.Editor spEditor = getSharedPreferences("sharedPreferences", MODE_PRIVATE).edit();
+        Intent i = new Intent(PlayCourseActivity.this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if(finished) {
+            spEditor.putInt("gameId", 0);
+            i.putExtra("gameId", 0);
+            setResult(Activity.RESULT_OK, i);
+        }
+        else{
+            spEditor.putInt("gameId", gameId);
+            i.putExtra("gameId", gameId);
+            setResult(Activity.RESULT_CANCELED, i);
+        }
+        spEditor.apply();
+
+        return i;
     }
 
 }

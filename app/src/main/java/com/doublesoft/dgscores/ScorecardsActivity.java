@@ -1,6 +1,7 @@
 package com.doublesoft.dgscores;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,9 +10,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.test.suitebuilder.TestMethod;
+import android.view.ContextMenu;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -37,6 +44,7 @@ public class ScorecardsActivity extends AppCompatActivity {
     LongSparseArray<Cursor[]> gameScoresByPlayers; // key: gameId, value: yhen pelin scorecardit pelaajittain
     DatabaseAdapter db;
     ListView listView;
+    ScorecardAdapter adapter;
     int[] gameIds;
 
     @Override
@@ -84,9 +92,10 @@ public class ScorecardsActivity extends AppCompatActivity {
 
         listView = (ListView)findViewById(R.id.scorecard_listview);
         ArrayList<Integer> ids = db.getScorecardGameIdArrayList();
-        ScorecardAdapter adapter = new ScorecardAdapter(context, R.layout.scorecards_game, ids);
+        adapter = new ScorecardAdapter(context, R.layout.scorecards_game, ids);
         listView.setAdapter(adapter);
 
+        //registerForContextMenu(listView);
     }
 
     private class ScorecardAdapter extends ArrayAdapter<Integer>{
@@ -106,6 +115,7 @@ public class ScorecardsActivity extends AppCompatActivity {
             View view = convertView;
             if(view == null){
                 view = inflater.inflate(R.layout.scorecards_game, null);
+                //view.setTag(gameIds.get(position));
             }
             TextView courseNameView = (TextView) view.findViewById(R.id.textView_course);
             TextView playersView = (TextView) view.findViewById(R.id.textView_players);
@@ -179,6 +189,26 @@ public class ScorecardsActivity extends AppCompatActivity {
                     Intent intent = new Intent(ScorecardsActivity.this, ViewScorecardsActivity.class);
                     intent.putExtras(b);
                     startActivity(intent);
+                }
+            });
+
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(final View v) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                    new AlertDialog.Builder(getContext())
+                            .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(context,"delete gameId: " + gameIds.get(position), Toast.LENGTH_SHORT).show();
+                                    db.deleteByGameId(gameIds.get(position));
+                                    //TODO: päivitä listaus
+                                    adapter.notifyDataSetChanged();
+                                }
+                            })
+                            .show();
+
+                    return true;
                 }
             });
             return view;

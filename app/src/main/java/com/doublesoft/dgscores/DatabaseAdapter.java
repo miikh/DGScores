@@ -180,6 +180,10 @@ class DatabaseAdapter {
         return throwCount;
     }
 
+    void deleteByGameId(int gameId){
+        db.delete("SCORECARDS", "GAME_ID = ?", new String[] {String.valueOf(gameId)} );
+    }
+
     private static class DBOpenHelper extends SQLiteOpenHelper{
 
         private static final String CREATETABLE_COURSES = "CREATE TABLE IF NOT EXISTS COURSES (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +

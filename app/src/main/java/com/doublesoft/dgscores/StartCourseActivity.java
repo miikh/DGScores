@@ -1,5 +1,6 @@
 package com.doublesoft.dgscores;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
@@ -81,6 +83,25 @@ public class StartCourseActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent();
+        i.putExtra("gameId", 0);
+        setResult(Activity.RESULT_OK, i);
+        playersCursor.close();
+        db.close();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
     private void setAddPlayer(){
         final EditText t = new EditText(context);
         t.setHint("Name");
@@ -118,6 +139,9 @@ public class StartCourseActivity extends AppCompatActivity {
         if(adapter.players.size() > 0){
             Intent i = new Intent(StartCourseActivity.this, ChooseCourseActivity.class);
             i.putExtra("players", adapter.players);
+            i.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            playersCursor.close();
+            db.close();
             this.startActivity(i);
         }
         else {Toast.makeText(context, "Choose players first!", Toast.LENGTH_LONG).show();}

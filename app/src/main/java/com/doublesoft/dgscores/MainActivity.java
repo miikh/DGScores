@@ -16,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     Button btnPlay;
     int gameId;
+    final int CONTINUE = 1;
+    final int NEW_GAME = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent i = new Intent(MainActivity.this, PlayCourseActivity.class);
-                                    startActivityForResult(i, 1);
+                                    startActivityForResult(i, CONTINUE);
                                 }
                             })
                             .setNegativeButton("Start New Game", new DialogInterface.OnClickListener() {
@@ -60,14 +62,15 @@ public class MainActivity extends AppCompatActivity {
                                     spEditor.putInt("gameId", 0);
                                     spEditor.apply();
                                     Intent i = new Intent(MainActivity.this, StartCourseActivity.class);
-                                    startActivityForResult(i, 1);
+                                    startActivityForResult(i, NEW_GAME);
+                                    gameId = 0;
                                 }
                             })
                             .show();
                 }
                 else {
                     Intent i = new Intent(MainActivity.this, StartCourseActivity.class);
-                    MainActivity.this.startActivity(i);
+                    MainActivity.this.startActivityForResult(i, NEW_GAME);
                 }
             }
         });
@@ -101,11 +104,25 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 1){
-            //TODO: Intent data tulee nullina
+        if(requestCode == NEW_GAME){
+            //TODO: lifecycle
             if(resultCode == Activity.RESULT_OK) {
-                gameId = data.getIntExtra("gameId", 0);
                 btnPlay.setText(getResources().getString(R.string.title_activity_play_course));
+                gameId = 0;
+            }
+            else if(resultCode == Activity.RESULT_CANCELED){
+                btnPlay.setText(getResources().getString(R.string.title_activity_play_course) + "/RESUME");
+                gameId = data.getIntExtra("gameId", 0);
+            }
+        }
+        else if(requestCode == CONTINUE){
+            if(resultCode == Activity.RESULT_OK){
+                btnPlay.setText(getResources().getString(R.string.title_activity_play_course));
+                gameId = 0;
+            }
+            else if(resultCode == Activity.RESULT_CANCELED){
+                btnPlay.setText(getResources().getString(R.string.title_activity_play_course) + "/RESUME");
+                gameId = data.getIntExtra("gameId", 0);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
