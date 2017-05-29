@@ -44,12 +44,13 @@ class DatabaseAdapter {
         db.insert(TABLE_PLAYERS, null, name);
     }
 
-    void insertCourse(ContentValues course, ContentValues[] fairways){
+    long insertCourse(ContentValues course, ContentValues[] fairways){
         long id = db.insert(TABLE_COURSES, null, course);
         for(ContentValues cv : fairways) {
             cv.put("course_id", id);
             db.insert(TABLE_FAIRWAY, null, cv);
         }
+        return id;
     }
 
     void insertScorecard(ContentValues[] scorecards){

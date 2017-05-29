@@ -1,5 +1,6 @@
 package com.doublesoft.dgscores;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -135,9 +136,10 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         String courseName = courseNameView.getText().toString().trim();
         int courseDistance = 0;
         ContentValues[] fairwaysValues = new ContentValues[holeCount];
+        int par = 0;
         for(int i=0;i<holeCount;i++){
             LinearLayout l = (LinearLayout) holeTable.getChildAt(i);
-            int par = ((NumberPicker) l.getChildAt(2)).getValue();
+            par = ((NumberPicker) l.getChildAt(2)).getValue();
             String distanceField = ((EditText) l.getChildAt(3)).getText().toString().trim();
             int distance = 0;
             if(!distanceField.equals("")) distance = Integer.parseInt(distanceField);
@@ -158,11 +160,15 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
 
             DatabaseAdapter db = new DatabaseAdapter(context);
             db.open();
-            db.insertCourse(courseValues, fairwaysValues);
+            long id = db.insertCourse(courseValues, fairwaysValues);
             db.close();
             Intent intent = new Intent();
-            intent.putExtra("requestCode", 0);
+            intent.putExtra("name", courseName);
+            intent.putExtra("holeCount", String.valueOf(holeCount));
+            intent.putExtra("par", String.valueOf(par));
+            intent.putExtra("id", String.valueOf(id));
             Toast.makeText(context, "Course " + courseName + " added", Toast.LENGTH_SHORT).show();
+            setResult(Activity.RESULT_OK, intent);
             this.finish();
         }
         else{

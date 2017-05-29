@@ -1,5 +1,6 @@
 package com.doublesoft.dgscores;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,10 +13,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,8 @@ import java.util.List;
 public class CoursesActivity extends AppCompatActivity {
 
     Context context;
+    ArrayList<String[]> courseData;
+    CourseAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,26 +37,11 @@ public class CoursesActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         context = this;
-        DatabaseAdapter db = new DatabaseAdapter(context);
-        db.open();
-        Cursor courses = db.getCourses();
-        courses.moveToFirst();
 
-        // kerätään tarvittavat tiedot radoista
-        ArrayList<String[]> courseTexts = new ArrayList<>();
-        for(int i=0;i<courses.getCount();i++) {
-            String[] s = new String[3];
-            s[0] = courses.getString(courses.getColumnIndex("NAME"));
-            s[1] = courses.getString(courses.getColumnIndex("HOLE_COUNT"));
-            s[2] = courses.getString(courses.getColumnIndex("PAR"));
-            courseTexts.add(s);
-            courses.moveToNext();
-        }
-        courses.close();
-        db.close();
+        courseData = getCourseData();
 
         ListView listView = (ListView) findViewById(R.id.listView_courses);
-        CourseAdapter adapter = new CourseAdapter(context, R.layout.scorecards_game, courseTexts);
+        adapter = new CourseAdapter(context, R.layout.scorecards_game, courseData);
         listView.setAdapter(adapter);
 
         FloatingActionButton btnAddCourse = (FloatingActionButton) findViewById(R.id.btn_add_course);
@@ -60,9 +50,59 @@ public class CoursesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(CoursesActivity.this, AddCourseActivity.class);
-                CoursesActivity.this.startActivity(i);
+                CoursesActivity.this.startActivityForResult(i, 1);
             }
         });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(CoursesActivity.this, AddCourseActivity.class);
+                i.putExtra("courseId", (String)view.getTag());
+                startActivity(i);
+            }
+        });
+    }
+
+    private ArrayList<String[]> getCourseData(){
+        DatabaseAdapter db = new DatabaseAdapter(context);
+        db.open();
+        Cursor courses = db.getCourses();
+        courses.moveToFirst();
+
+        // kerätään tarvittavat tiedot radoista
+        ArrayList<String[]> courseTexts = new ArrayList<>();
+        for(int i=0;i<courses.getCount();i++) {
+            String[] s = new String[4];
+            s[0] = courses.getString(courses.getColumnIndex("NAME"));
+            s[1] = courses.getString(courses.getColumnIndex("HOLE_COUNT"));
+            s[2] = courses.getString(courses.getColumnIndex("PAR"));
+            s[3] = courses.getString(0); // _id
+            courseTexts.add(s);
+            courses.moveToNext();
+        }
+        courses.close();
+        db.close();
+
+        return courseTexts;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1){
+            if(resultCode == Activity.RESULT_OK){
+                courseData = getCourseData();
+                String[] newRow = new String[4];
+                newRow[0] = data.getStringExtra("name");
+                newRow[1] = data.getStringExtra("holeCount");
+                newRow[2] = data.getStringExtra("par");
+                newRow[3] = data.getStringExtra("id");
+                adapter.add(newRow);
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private class CourseAdapter extends ArrayAdapter<String[]> {
@@ -88,15 +128,15 @@ public class CoursesActivity extends AppCompatActivity {
 
             String[] row = getItem(position);
 
-            if (row != null){
-                TextView name = (TextView) v.findViewById(R.id.textView_course);
-                TextView holes = (TextView) v.findViewById(R.id.textView_players);
-                TextView par = (TextView) v.findViewById(R.id.textView_date);
+            v.setTag(row[3]);
 
-                name.setText("Name: " + row[0]);
-                holes.setText("Holes: " + row[1]);
-                par.setText("Par: " + row[2]);
-            }
+            TextView name = (TextView) v.findViewById(R.id.textView_course);
+            TextView holes = (TextView) v.findViewById(R.id.textView_players);
+            TextView par = (TextView) v.findViewById(R.id.textView_date);
+
+            name.setText("Name: " + row[0]);
+            holes.setText("Holes: " + row[1]);
+            par.setText("Par: " + row[2]);
 
             return v;
         }
