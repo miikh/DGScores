@@ -3,10 +3,12 @@ package com.doublesoft.dgscores;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -40,17 +42,36 @@ class DatabaseAdapter {
         dbHelper.close();
     }
 
-    void insertPlayers(ContentValues name){
-        db.insert(TABLE_PLAYERS, null, name);
+    boolean insertPlayers(ContentValues name){
+        if(!checkPlayersDuplicate(name.get("NAME").toString())) {
+            db.insert(TABLE_PLAYERS, null, name);
+            return true;
+        }
+        else return false;
+    }
+
+    private boolean checkPlayersDuplicate(String name){
+        Cursor c = db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ? AND DELETED = 0", new String[]{name});
+        if(c != null && c.getCount() > 0) return true; // duplicate found
+        else return false;
     }
 
     long insertCourse(ContentValues course, ContentValues[] holes){
-        long id = db.insert(TABLE_COURSES, null, course);
-        for(ContentValues cv : holes) {
-            cv.put("course_id", id);
-            db.insert(TABLE_HOLES, null, cv);
+        if(!checkCourseDuplicate(course.get("NAME").toString())) {
+            long id = db.insert(TABLE_COURSES, null, course);
+            for (ContentValues cv : holes) {
+                cv.put("COURSE_ID", id);
+                db.insert(TABLE_HOLES, null, cv);
+            }
+            return id;
         }
-        return id;
+        else return -1;
+    }
+
+    private boolean checkCourseDuplicate(String name){
+        Cursor c = db.rawQuery("SELECT * FROM COURSES WHERE NAME = ? AND DELETED = 0", new String[]{name});
+        if(c != null && c.getCount() > 0) return true; // duplicate found
+        else return false;
     }
 
     void insertScorecard(ContentValues[] scorecards){
@@ -67,10 +88,10 @@ class DatabaseAdapter {
     }
 
     public Cursor getPlayers(){
-        return db.rawQuery("SELECT * FROM PLAYERS WHERE DELETED = ? ORDER BY NAME ASC", new String[]{"0"});
+        return db.rawQuery("SELECT * FROM PLAYERS WHERE DELETED = 0 ORDER BY NAME ASC", null);
     }
 
-    Cursor getPlayer(String name) { return db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ?", new String[] {name}); }
+    Cursor getPlayer(String name) { return db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ? AND DELETED = 0", new String[] {name}); }
 
     Cursor getPlayer(long id) { return db.rawQuery("SELECT * FROM PLAYERS WHERE _id = ?", new String[] {Long.toString(id)}); }
 
@@ -102,6 +123,7 @@ class DatabaseAdapter {
         Cursor course = getCourse(courseName);
         course.moveToFirst();
         long id = course.getLong(0);
+
         return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ? ORDER BY _id ASC", new String[]{Long.toString(id)});
     }
 
@@ -109,9 +131,9 @@ class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ?", new String[]{Long.toString(id)});
     }
 
-    Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES WHERE DELETED = ? ORDER BY NAME ASC", new String[] {"0"}); }
+    Cursor getCourses() {return db.rawQuery("SELECT * FROM COURSES WHERE DELETED = 0 ORDER BY NAME ASC", null); }
 
-    Cursor getCourse(String name) { return db.rawQuery("SELECT * FROM COURSES WHERE NAME = ?", new String[]{name}); }
+    Cursor getCourse(String name) {return db.rawQuery("SELECT * FROM COURSES WHERE NAME = ? AND DELETED = 0", new String[]{name});}
 
     Cursor getCourseByGameId(int gameId){
         Cursor c = db.rawQuery("SELECT HOLE_ID FROM SCORECARDS WHERE GAME_ID = ?", new String[] {String.valueOf(gameId)});
@@ -183,6 +205,31 @@ class DatabaseAdapter {
 
     void deleteByGameId(int gameId){
         db.delete("SCORECARDS", "GAME_ID = ?", new String[] {String.valueOf(gameId)} );
+    }
+
+    void deleteCourse(long id){
+        Cursor course = db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{String.valueOf(id)});
+        course.moveToFirst();
+        ContentValues values = new ContentValues();
+        values.put("_id", course.getLong(0));
+        values.put("NAME", course.getString(course.getColumnIndex("NAME")));
+        values.put("HOLE_COUNT", course.getInt(course.getColumnIndex("HOLE_COUNT")));
+        values.put("PAR", course.getInt(course.getColumnIndex("PAR")));
+        if(course.getInt(course.getColumnIndex("DISTANCE")) != -1) values.put("DISTANCE", course.getInt(course.getColumnIndex("DISTANCE")));
+        values.put("DELETED", 1);
+        course.close();
+        db.update(TABLE_COURSES, values, "_id = ?", new String[]{String.valueOf(id)});
+    }
+
+    void deletePlayer(long id){
+        Cursor player = db.rawQuery("SELECT * FROM PLAYERS WHERE _id = ?", new String[]{String.valueOf(id)});
+        player.moveToFirst();
+        ContentValues values = new ContentValues();
+        values.put("_id", player.getLong(0));
+        values.put("NAME", player.getString(player.getColumnIndex("NAME")));
+        values.put("DELETED", 1);
+        player.close();
+        db.update(TABLE_PLAYERS, values, "_id=?", new String[]{String.valueOf(id)});
     }
 
     private static class DBOpenHelper extends SQLiteOpenHelper{

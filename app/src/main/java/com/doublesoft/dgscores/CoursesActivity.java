@@ -120,13 +120,16 @@ public class CoursesActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        String nameText = ((TextView)((LinearLayout)menuInfo.targetView).getChildAt(0)).getText().toString();
-        String[] parts = nameText.split(":");
 
         if(item.getItemId() ==  R.id.delete)
         {
-            Toast.makeText(context, "delete " + parts[1].trim(), Toast.LENGTH_SHORT).show();
-
+            long id = Long.parseLong(menuInfo.targetView.getTag().toString());
+            DatabaseAdapter db = new DatabaseAdapter(context);
+            db.open();
+            db.deleteCourse(id);
+            db.close();
+            adapter.remove(adapter.getItem(menuInfo.position));
+            adapter.notifyDataSetChanged();
         }
         else return false;
         return true;
@@ -155,16 +158,18 @@ public class CoursesActivity extends AppCompatActivity {
 
             String[] row = getItem(position);
 
-            v.setTag(row[3]);
+            if(row != null) {
+                // laitetaan tagiksi courseId
+                v.setTag(row[3]);
 
-            TextView name = (TextView) v.findViewById(R.id.textView_course);
-            TextView holes = (TextView) v.findViewById(R.id.textView_players);
-            TextView par = (TextView) v.findViewById(R.id.textView_date);
+                TextView name = (TextView) v.findViewById(R.id.textView_course);
+                TextView holes = (TextView) v.findViewById(R.id.textView_players);
+                TextView par = (TextView) v.findViewById(R.id.textView_date);
 
-            name.setText("Name: " + row[0]);
-            holes.setText("Holes: " + row[1]);
-            par.setText("Par: " + row[2]);
-
+                name.setText("Name: " + row[0]);
+                holes.setText("Holes: " + row[1]);
+                par.setText("Par: " + row[2]);
+            }
             return v;
         }
     }

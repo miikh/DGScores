@@ -2,6 +2,7 @@
   <dictionary name="yone">
     <words>
       <w>createdatabase</w>
+      <w>sqlite</w>
     </words>
   </dictionary>
 </component>

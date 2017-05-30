@@ -31,6 +31,7 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
         db.open();
 
         Bundle b = getIntent().getExtras();
+        long courseId = b.getLong("courseId");
         String courseName = b.getString("courseName");
         int gameId = b.getInt("gameId");
         playersList = b.getStringArrayList("players");
@@ -39,7 +40,7 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
         courseNameView.setText(courseName);
 
         setHeader();
-        setScores(courseName, gameId);
+        setScores(courseId, gameId);
 
         db.close();
 
@@ -60,8 +61,8 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
         }
     }
 
-    void setScores(String courseName, int gameId){
-        Cursor holes = db.getFairways(courseName);
+    void setScores(long courseId, int gameId){
+        Cursor holes = db.getFairways(courseId);
         holes.moveToFirst();
         TableLayout layout = (TableLayout) findViewById(R.id.scores_table);
         TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
@@ -90,7 +91,7 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
             holes.moveToNext();
         }
 
-        Cursor course = db.getCourse(courseName);
+        Cursor course = db.getCourse(courseId);
         TableRow lastRow = new TableRow(context);
         lastRow.addView(new TextView(context));
         TextView par = new TextView(context);

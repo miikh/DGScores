@@ -139,38 +139,42 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         int par = 0;
         for(int i=0;i<holeCount;i++){
             LinearLayout l = (LinearLayout) holeTable.getChildAt(i);
-            par = ((NumberPicker) l.getChildAt(2)).getValue();
+            int holePar = ((NumberPicker) l.getChildAt(2)).getValue();
             String distanceField = ((EditText) l.getChildAt(3)).getText().toString().trim();
             int distance = 0;
             if(!distanceField.equals("")) distance = Integer.parseInt(distanceField);
             String name = ((EditText) l.getChildAt(0)).getText().toString().trim();
             holeValues[i] = new ContentValues();
-            holeValues[i].put("par", par);
-            if(distance != 0) holeValues[i].put("distance", distance);
+            holeValues[i].put("PAR", holePar);
+            if(distance != 0) holeValues[i].put("DISTANCE", distance);
             if(!name.equals("Hole " + (i+1))) holeValues[i].put("name", name);
 
             courseDistance += distance;
+            par += holePar;
 
         }
         if(!courseName.equals("")) {
-            courseValues.put("name", courseName);
-            courseValues.put("hole_count", holeCount);
-            courseValues.put("par", Integer.parseInt(coursePar.getText().toString()));
-            courseValues.put("deleted", 0);
-            if (courseDistance > 0) courseValues.put("distance", courseDistance);
+            courseValues.put("NAME", courseName);
+            courseValues.put("HOLE_COUNT", holeCount);
+            courseValues.put("PAR", Integer.parseInt(coursePar.getText().toString()));
+            courseValues.put("DELETED", 0);
+            if (courseDistance > 0) courseValues.put("DISTANCE", courseDistance);
 
             DatabaseAdapter db = new DatabaseAdapter(context);
             db.open();
             long id = db.insertCourse(courseValues, holeValues);
             db.close();
-            Intent intent = new Intent();
-            intent.putExtra("name", courseName);
-            intent.putExtra("holeCount", String.valueOf(holeCount));
-            intent.putExtra("par", String.valueOf(par));
-            intent.putExtra("id", String.valueOf(id));
-            Toast.makeText(context, "Course " + courseName + " added", Toast.LENGTH_SHORT).show();
-            setResult(Activity.RESULT_OK, intent);
-            this.finish();
+            if(id != -1) { // duplicate not found
+                Intent intent = new Intent();
+                intent.putExtra("name", courseName);
+                intent.putExtra("holeCount", String.valueOf(holeCount));
+                intent.putExtra("par", String.valueOf(par));
+                intent.putExtra("id", String.valueOf(id));
+                Toast.makeText(context, "Course " + courseName + " added", Toast.LENGTH_SHORT).show();
+                setResult(Activity.RESULT_OK, intent);
+                this.finish();
+            }
+            else courseNameView.setError(getString(R.string.course_name_error_1));
         }
         else{
             courseNameView.setError(getString(R.string.course_name_error));

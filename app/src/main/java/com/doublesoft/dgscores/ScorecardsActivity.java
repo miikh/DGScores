@@ -183,6 +183,7 @@ public class ScorecardsActivity extends AppCompatActivity {
                     }
 
                     Bundle b = new Bundle();
+                    b.putLong("courseId", course.getLong(0));
                     b.putInt("gameId", gameId);
                     b.putString("courseName", courseName);
                     b.putStringArrayList("players", playerList);

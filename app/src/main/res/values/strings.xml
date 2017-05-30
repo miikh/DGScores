@@ -12,6 +12,7 @@
     <string name="holes">Holes</string>
     <string name="hole_distance">Dist. (m)</string>
     <string name="course_name_error">Set name !</string>
+    <string name="course_name_error_1">Name already found !</string>
     <string name="choose_course">Choose Course</string>
     <string name="delete_game">Delete</string>
 </resources>

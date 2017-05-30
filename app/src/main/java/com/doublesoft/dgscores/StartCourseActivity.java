@@ -115,12 +115,15 @@ public class StartCourseActivity extends AppCompatActivity {
                         String name = t.getText().toString().trim();
                         if(name.length() > 0 ) {
                             ContentValues cv = new ContentValues();
-                            cv.put("name", name);
-                            cv.put("deleted", 0);
-                            db.insertPlayers(cv);
-                            playersCursor = db.getPlayers();
-                            adapter.swapCursor(playersCursor);
-                            //Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
+                            cv.put("NAME", name);
+                            cv.put("DELETED", 0);
+                            if(db.insertPlayers(cv)) {
+                                playersCursor = db.getPlayers();
+                                adapter.swapCursor(playersCursor);
+                                //Toast.makeText(context, "Player " + name + " added", Toast.LENGTH_SHORT).show();
+                            } else{
+                                Toast.makeText(context, "Player already found!", Toast.LENGTH_LONG).show();
+                            }
                         }
                         //else { t.setError("Set player name"); }
                     }
