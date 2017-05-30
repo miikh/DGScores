@@ -116,7 +116,7 @@ public class PlayCourseActivity extends AppCompatActivity {
             holeCount = Integer.parseInt(course.getString(course.getColumnIndex("HOLE_COUNT")));
             ((TextView) findViewById(R.id.textView10)).setText(course.getString(course.getColumnIndex("NAME")));
 
-            holes = db.getFairways(course.getString(course.getColumnIndex("NAME")));
+            holes = db.getHoles(course.getString(course.getColumnIndex("NAME")));
             holes.moveToFirst();
             players.moveToFirst();
             scorecards = new HashMap<>();
@@ -149,7 +149,7 @@ public class PlayCourseActivity extends AppCompatActivity {
             course = db.getCourse(courseName);
             course.moveToFirst();
             players = db.getCoursePlayers(playerList);
-            holes = db.getFairways(courseName);
+            holes = db.getHoles(courseName);
 
             holeCount = Integer.parseInt(course.getString(course.getColumnIndex("HOLE_COUNT")));
 

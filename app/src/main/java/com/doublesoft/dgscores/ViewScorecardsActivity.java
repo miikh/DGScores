@@ -2,6 +2,7 @@ package com.doublesoft.dgscores;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -46,6 +47,7 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
 
     }
 
+    // first row of scores
     void setHeader(){
         TableLayout layout = (TableLayout) findViewById(R.id.scores_table);
         TableRow header = (TableRow) layout.getChildAt(0);
@@ -62,7 +64,8 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
     }
 
     void setScores(long courseId, int gameId){
-        Cursor holes = db.getFairways(courseId);
+        // set scores by hole
+        Cursor holes = db.getHoles(courseId);
         holes.moveToFirst();
         TableLayout layout = (TableLayout) findViewById(R.id.scores_table);
         TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
@@ -91,11 +94,16 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
             holes.moveToNext();
         }
 
+        // overall scores on last row
         Cursor course = db.getCourse(courseId);
+        course.moveToFirst();
+
+        String msg = String.valueOf(gameId) + ":" + course.getString(0) + ":" + course.getInt(course.getColumnIndex("PAR"));
+        Log.i("gameId:courseId:par", msg);
+
         TableRow lastRow = new TableRow(context);
         lastRow.addView(new TextView(context));
         TextView par = new TextView(context);
-        course.moveToFirst();
         par.setText(course.getString(course.getColumnIndex("PAR")));
         par.setGravity(Gravity.CENTER);
         lastRow.addView(par);

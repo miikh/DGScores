@@ -95,6 +95,10 @@ class DatabaseAdapter {
 
     Cursor getPlayer(long id) { return db.rawQuery("SELECT * FROM PLAYERS WHERE _id = ?", new String[] {Long.toString(id)}); }
 
+    Cursor getCourse(long id){
+        return db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{String.valueOf(id)});
+    }
+
     Cursor getCoursePlayers(ArrayList<String> players) {
         MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "NAME"}, players.size());
         for(String p : players) {
@@ -119,7 +123,7 @@ class DatabaseAdapter {
         return players;
     }
 
-    Cursor getFairways(String courseName){
+    Cursor getHoles(String courseName){
         Cursor course = getCourse(courseName);
         course.moveToFirst();
         long id = course.getLong(0);
@@ -127,7 +131,7 @@ class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ? ORDER BY _id ASC", new String[]{Long.toString(id)});
     }
 
-    Cursor getFairways(long id){
+    Cursor getHoles(long id){
         return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ?", new String[]{Long.toString(id)});
     }
 
@@ -138,7 +142,7 @@ class DatabaseAdapter {
     Cursor getCourseByGameId(int gameId){
         Cursor c = db.rawQuery("SELECT HOLE_ID FROM SCORECARDS WHERE GAME_ID = ?", new String[] {String.valueOf(gameId)});
         c.moveToFirst();
-        Cursor c1 = getCourse(c.getLong(0));
+        Cursor c1 = getCourseByHoleId(c.getLong(0));
         c1.moveToFirst();
         String id = c1.getString(0);
         c.close();
@@ -146,7 +150,7 @@ class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{id});
     }
 
-    Cursor getCourse(long holeId){
+    Cursor getCourseByHoleId(long holeId){
         Cursor c = db.rawQuery("SELECT COURSE_ID FROM HOLES WHERE _id = ? GROUP BY COURSE_ID", new String[]{Long.toString(holeId)});
         c.moveToFirst();
         String id = c.getString(c.getColumnIndex("COURSE_ID"));

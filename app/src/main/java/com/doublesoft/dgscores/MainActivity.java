@@ -114,8 +114,10 @@ public class MainActivity extends AppCompatActivity {
                 gameId = 0;
             }
             else if(resultCode == Activity.RESULT_CANCELED){
-                btnPlay.setText(getResources().getString(R.string.title_activity_play_course) + "/RESUME");
-                gameId = data.getIntExtra("gameId", 0);
+                if(data != null) {
+                    btnPlay.setText(getResources().getString(R.string.title_activity_play_course) + "/RESUME");
+                    gameId = data.getIntExtra("gameId", 0);
+                }
             }
         }
         else if(requestCode == CONTINUE){
@@ -124,8 +126,10 @@ public class MainActivity extends AppCompatActivity {
                 gameId = 0;
             }
             else if(resultCode == Activity.RESULT_CANCELED){
-                btnPlay.setText(getResources().getString(R.string.title_activity_play_course) + "/RESUME");
-                gameId = data.getIntExtra("gameId", 0);
+                if(data != null) {
+                    btnPlay.setText(getResources().getString(R.string.title_activity_play_course) + "/RESUME");
+                    gameId = data.getIntExtra("gameId", 0);
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
