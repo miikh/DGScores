@@ -18,14 +18,14 @@ class DatabaseAdapter {
 
     private SQLiteDatabase db;
     private DBOpenHelper dbHelper;
-    private static final String DBNAME = "database.db";
+    private static final String DB_NAME = "database.sqlite";
     private static final String TABLE_PLAYERS = "players";
     private static final String TABLE_COURSES = "courses";
-    private static final String TABLE_FAIRWAY = "fairway";
+    private static final String TABLE_HOLES = "holes";
     private static final String TABLE_SCORECARDS = "scorecards";
 
     DatabaseAdapter(Context context){
-        dbHelper = new DBOpenHelper(context, DBNAME, null, 1);
+        dbHelper = new DBOpenHelper(context, DB_NAME, null, 1);
     }
 
     void open(){
@@ -44,11 +44,11 @@ class DatabaseAdapter {
         db.insert(TABLE_PLAYERS, null, name);
     }
 
-    long insertCourse(ContentValues course, ContentValues[] fairways){
+    long insertCourse(ContentValues course, ContentValues[] holes){
         long id = db.insert(TABLE_COURSES, null, course);
-        for(ContentValues cv : fairways) {
+        for(ContentValues cv : holes) {
             cv.put("course_id", id);
-            db.insert(TABLE_FAIRWAY, null, cv);
+            db.insert(TABLE_HOLES, null, cv);
         }
         return id;
     }
@@ -61,13 +61,13 @@ class DatabaseAdapter {
 
     void updateScorecards(ContentValues[] scorecards){
         for(ContentValues scorecard : scorecards){
-            db.update(TABLE_SCORECARDS, scorecard, "PLAYER_ID = ? AND FAIRWAY_ID = ? AND GAME_ID = ?",
-                    new String[] {String.valueOf(scorecard.get("PLAYER_ID")), String.valueOf(scorecard.get("FAIRWAY_ID")), String.valueOf(scorecard.get("GAME_ID"))});
+            db.update(TABLE_SCORECARDS, scorecard, "PLAYER_ID = ? AND HOLE_ID = ? AND GAME_ID = ?",
+                    new String[] {String.valueOf(scorecard.get("PLAYER_ID")), String.valueOf(scorecard.get("HOLE_ID")), String.valueOf(scorecard.get("GAME_ID"))});
         }
     }
 
     public Cursor getPlayers(){
-        return db.rawQuery("SELECT * FROM PLAYERS ORDER BY NAME ASC", null);
+        return db.rawQuery("SELECT * FROM PLAYERS WHERE DELETED = ? ORDER BY NAME ASC", new String[]{"0"});
     }
 
     Cursor getPlayer(String name) { return db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ?", new String[] {name}); }
@@ -102,19 +102,19 @@ class DatabaseAdapter {
         Cursor course = getCourse(courseName);
         course.moveToFirst();
         long id = course.getLong(0);
-        return db.rawQuery("SELECT * FROM FAIRWAY WHERE COURSE_ID = ? ORDER BY _id ASC", new String[]{Long.toString(id)});
+        return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ? ORDER BY _id ASC", new String[]{Long.toString(id)});
     }
 
     Cursor getFairways(long id){
-        return db.rawQuery("SELECT * FROM FAIRWAY WHERE COURSE_ID = ?", new String[]{Long.toString(id)});
+        return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ?", new String[]{Long.toString(id)});
     }
 
-    Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES ORDER BY NAME ASC", null); }
+    Cursor getCourses() { return db.rawQuery("SELECT * FROM COURSES WHERE DELETED = ? ORDER BY NAME ASC", new String[] {"0"}); }
 
     Cursor getCourse(String name) { return db.rawQuery("SELECT * FROM COURSES WHERE NAME = ?", new String[]{name}); }
 
     Cursor getCourseByGameId(int gameId){
-        Cursor c = db.rawQuery("SELECT FAIRWAY_ID FROM SCORECARDS WHERE GAME_ID = ?", new String[] {String.valueOf(gameId)});
+        Cursor c = db.rawQuery("SELECT HOLE_ID FROM SCORECARDS WHERE GAME_ID = ?", new String[] {String.valueOf(gameId)});
         c.moveToFirst();
         Cursor c1 = getCourse(c.getLong(0));
         c1.moveToFirst();
@@ -125,7 +125,7 @@ class DatabaseAdapter {
     }
 
     Cursor getCourse(long holeId){
-        Cursor c = db.rawQuery("SELECT COURSE_ID FROM FAIRWAY WHERE _id = ? GROUP BY COURSE_ID", new String[]{Long.toString(holeId)});
+        Cursor c = db.rawQuery("SELECT COURSE_ID FROM HOLES WHERE _id = ? GROUP BY COURSE_ID", new String[]{Long.toString(holeId)});
         c.moveToFirst();
         String id = c.getString(c.getColumnIndex("COURSE_ID"));
         c.close();
@@ -137,7 +137,7 @@ class DatabaseAdapter {
     Cursor getScorecardByGameId(long gameId) { return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ?", new String[]{Long.toString(gameId)}); }
 
     Cursor getScorecardsByGameIdAndPlayerId(long gameId, long playerId){
-        return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ? AND PLAYER_ID = ? ORDER BY FAIRWAY_ID ASC", new String[]{Long.toString(gameId), Long.toString(playerId)});
+        return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ? AND PLAYER_ID = ? ORDER BY HOLE_ID ASC", new String[]{Long.toString(gameId), Long.toString(playerId)});
     }
 
     Cursor getScorecardsReadable(long gameId, long playerId){
@@ -174,7 +174,7 @@ class DatabaseAdapter {
     }
 
     int getThrowCount(String playerId, String holeId, String gameId){
-        Cursor c = db.rawQuery("SELECT THROW_COUNT FROM SCORECARDS WHERE PLAYER_ID = ? AND FAIRWAY_ID = ? AND GAME_ID = ?", new String[] {playerId, holeId, gameId});
+        Cursor c = db.rawQuery("SELECT THROW_COUNT FROM SCORECARDS WHERE PLAYER_ID = ? AND HOLE_ID = ? AND GAME_ID = ?", new String[] {playerId, holeId, gameId});
         c.moveToFirst();
         int throwCount = c.getInt(0);
         c.close();
@@ -188,16 +188,16 @@ class DatabaseAdapter {
     private static class DBOpenHelper extends SQLiteOpenHelper{
 
         private static final String CREATETABLE_COURSES = "CREATE TABLE IF NOT EXISTS COURSES (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "NAME TEXT NOT NULL, HOLE_COUNT INT NOT NULL, PAR INT NOT NULL, DISTANCE INT);";
-        private static final String CREATETABLE_FAIRWAY = "CREATE TABLE IF NOT EXISTS FAIRWAY (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "NAME TEXT NOT NULL, HOLE_COUNT INT NOT NULL, PAR INT NOT NULL, DISTANCE INT, DELETED INT NOT NULL);";
+        private static final String CREATETABLE_HOLES = "CREATE TABLE IF NOT EXISTS HOLES (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "COURSE_ID INT, PAR INT NOT NULL, DISTANCE INT, NAME TEXT, " +
                 "FOREIGN KEY (COURSE_ID) REFERENCES COURSES(_id));";
         private static final String CREATETABLE_PLAYERS = "CREATE TABLE IF NOT EXISTS PLAYERS (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "NAME TEXT NOT NULL);";
+                "NAME TEXT NOT NULL, DELETED INT NOT NULL);";
         private static final String CREATETABLE_SCORECARDS = "CREATE TABLE IF NOT EXISTS SCORECARDS (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "PLAYER_ID INT, FAIRWAY_ID INT, GAME_ID INT NOT NULL, OB INT, THROW_COUNT INT NOT NULL, DATE TEXT NOT NULL, " +
+                "PLAYER_ID INT, HOLE_ID INT, GAME_ID INT NOT NULL, OB INT, THROW_COUNT INT NOT NULL, DATE TEXT NOT NULL, " +
                 "FOREIGN KEY (PLAYER_ID) REFERENCES PLAYERS(_id), " +
-                "FOREIGN KEY (FAIRWAY_ID) REFERENCES FAIRWAY(_id));";
+                "FOREIGN KEY (HOLE_ID) REFERENCES HOLES(_id));";
 
         DBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -206,7 +206,7 @@ class DatabaseAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATETABLE_COURSES);
-            db.execSQL(CREATETABLE_FAIRWAY);
+            db.execSQL(CREATETABLE_HOLES);
             db.execSQL(CREATETABLE_PLAYERS);
             db.execSQL(CREATETABLE_SCORECARDS);
         }

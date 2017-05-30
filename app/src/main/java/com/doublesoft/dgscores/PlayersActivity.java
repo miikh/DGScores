@@ -40,10 +40,10 @@ public class PlayersActivity extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.players_listview);
 
-        final TextView testView = (TextView) findViewById(R.id.textView);
+        //final TextView testView = (TextView) findViewById(R.id.textView);
 
         players.moveToFirst();
-        testView.append(Integer.toString(players.getCount()) + "\n");
+        //testView.append(Integer.toString(players.getCount()) + "\n");
         /*
         for(int i=0;i<players.getCount();i++){
             testView.append(players.getString(players.getColumnIndex("NAME")) + "\n");
@@ -82,6 +82,7 @@ public class PlayersActivity extends AppCompatActivity {
                                 if(name.length() > 0 ) {
                                     ContentValues cv = new ContentValues();
                                     cv.put("name", name);
+                                    cv.put("deleted", 0);
                                     db.insertPlayers(cv);
                                     //testView.append(name + "\n");
                                     players = db.getPlayers();

@@ -116,6 +116,7 @@ public class StartCourseActivity extends AppCompatActivity {
                         if(name.length() > 0 ) {
                             ContentValues cv = new ContentValues();
                             cv.put("name", name);
+                            cv.put("deleted", 0);
                             db.insertPlayers(cv);
                             playersCursor = db.getPlayers();
                             adapter.swapCursor(playersCursor);

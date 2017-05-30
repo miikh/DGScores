@@ -246,7 +246,7 @@ public class PlayCourseActivity extends AppCompatActivity {
             Scorecards sc = (Scorecards) e.getValue();
             values[i] = new ContentValues();
             values[i].put("PLAYER_ID", Integer.parseInt(sc.playerId));
-            values[i].put("FAIRWAY_ID", Integer.parseInt(sc.fairwayId));
+            values[i].put("HOLE_ID", Integer.parseInt(sc.holeId));
             values[i].put("GAME_ID", sc.gameId);
             values[i].put("OB", sc.ob);
             values[i].put("THROW_COUNT", Integer.parseInt(sc.throwCount));
@@ -610,15 +610,15 @@ public class PlayCourseActivity extends AppCompatActivity {
 
     private class Scorecards {
         String playerId;
-        String fairwayId;
+        String holeId;
         int gameId;
         int ob;
         String throwCount;
         Date date;
 
-        Scorecards(String playerId, String fairwayId, int gameId, int ob, String throwCount){
+        Scorecards(String playerId, String holeId, int gameId, int ob, String throwCount){
             this.playerId = playerId;
-            this.fairwayId = fairwayId;
+            this.holeId = holeId;
             this.gameId = gameId;
             this.ob = ob;
             this.throwCount = throwCount;

@@ -72,7 +72,7 @@ public class ScorecardsActivity extends AppCompatActivity {
         for(int i=0;i<gameIds.length;i++){
             scorecards[i] = db.getScorecardByGameId(gameIds[i]);
             scorecards[i].moveToFirst();
-            long holeId = scorecards[i].getInt(scorecards[i].getColumnIndex("FAIRWAY_ID"));
+            long holeId = scorecards[i].getInt(scorecards[i].getColumnIndex("HOLE_ID"));
             Cursor c = db.getCourse(holeId);
             c.moveToFirst();
             courseIds[i] = c.getInt(0);
@@ -125,7 +125,7 @@ public class ScorecardsActivity extends AppCompatActivity {
             // set course name
             Cursor[] scoresByPlayers = gameScoresByPlayers.get(gameId);
             scoresByPlayers[0].moveToFirst();
-            long holeId = scoresByPlayers[0].getLong(scoresByPlayers[0].getColumnIndex("FAIRWAY_ID"));
+            long holeId = scoresByPlayers[0].getLong(scoresByPlayers[0].getColumnIndex("HOLE_ID"));
             Cursor course = db.getCourse(holeId);
             course.moveToFirst();
             courseNameView.setText("Course: " + course.getString(course.getColumnIndex("NAME")));
@@ -170,7 +170,7 @@ public class ScorecardsActivity extends AppCompatActivity {
                     int gameId = gameIds.get(position);
                     Cursor[] scoresByPlayers = gameScoresByPlayers.get(gameId);
                     scoresByPlayers[0].moveToFirst();
-                    long holeId = scoresByPlayers[0].getInt(scoresByPlayers[0].getColumnIndex("FAIRWAY_ID"));
+                    long holeId = scoresByPlayers[0].getInt(scoresByPlayers[0].getColumnIndex("HOLE_ID"));
                     Cursor course = db.getCourse(holeId);
                     course.moveToFirst();
                     String courseName = course.getString(course.getColumnIndex("NAME"));

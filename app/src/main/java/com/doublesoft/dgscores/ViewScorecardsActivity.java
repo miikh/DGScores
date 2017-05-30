@@ -3,7 +3,6 @@ package com.doublesoft.dgscores;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -41,6 +40,8 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
 
         setHeader();
         setScores(courseName, gameId);
+
+        db.close();
 
     }
 
@@ -131,6 +132,9 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
             scoreView.append("(" + String.valueOf(score) + ")");
             i++;
         }
+
+        holes.close();
+        course.close();
 
     }
 

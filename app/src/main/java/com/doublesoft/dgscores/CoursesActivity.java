@@ -10,7 +10,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -62,6 +65,8 @@ public class CoursesActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        registerForContextMenu(listView);
     }
 
     private ArrayList<String[]> getCourseData(){
@@ -103,6 +108,28 @@ public class CoursesActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_delete, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        String nameText = ((TextView)((LinearLayout)menuInfo.targetView).getChildAt(0)).getText().toString();
+        String[] parts = nameText.split(":");
+
+        if(item.getItemId() ==  R.id.delete)
+        {
+            Toast.makeText(context, "delete " + parts[1].trim(), Toast.LENGTH_SHORT).show();
+
+        }
+        else return false;
+        return true;
     }
 
     private class CourseAdapter extends ArrayAdapter<String[]> {

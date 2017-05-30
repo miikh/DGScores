@@ -135,7 +135,7 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         ContentValues courseValues = new ContentValues();
         String courseName = courseNameView.getText().toString().trim();
         int courseDistance = 0;
-        ContentValues[] fairwaysValues = new ContentValues[holeCount];
+        ContentValues[] holeValues = new ContentValues[holeCount];
         int par = 0;
         for(int i=0;i<holeCount;i++){
             LinearLayout l = (LinearLayout) holeTable.getChildAt(i);
@@ -144,10 +144,10 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
             int distance = 0;
             if(!distanceField.equals("")) distance = Integer.parseInt(distanceField);
             String name = ((EditText) l.getChildAt(0)).getText().toString().trim();
-            fairwaysValues[i] = new ContentValues();
-            fairwaysValues[i].put("par", par);
-            if(distance != 0) fairwaysValues[i].put("distance", distance);
-            if(!name.equals("Hole " + (i+1))) fairwaysValues[i].put("name", name);
+            holeValues[i] = new ContentValues();
+            holeValues[i].put("par", par);
+            if(distance != 0) holeValues[i].put("distance", distance);
+            if(!name.equals("Hole " + (i+1))) holeValues[i].put("name", name);
 
             courseDistance += distance;
 
@@ -156,11 +156,12 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
             courseValues.put("name", courseName);
             courseValues.put("hole_count", holeCount);
             courseValues.put("par", Integer.parseInt(coursePar.getText().toString()));
+            courseValues.put("deleted", 0);
             if (courseDistance > 0) courseValues.put("distance", courseDistance);
 
             DatabaseAdapter db = new DatabaseAdapter(context);
             db.open();
-            long id = db.insertCourse(courseValues, fairwaysValues);
+            long id = db.insertCourse(courseValues, holeValues);
             db.close();
             Intent intent = new Intent();
             intent.putExtra("name", courseName);
