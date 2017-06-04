@@ -14,7 +14,6 @@ import java.util.ArrayList;
 /**
  * Created by Miika on 16.5.2017.
  */
-
 public class ViewScorecardsActivity extends ScorecardsActivity {
 
     ArrayList<String> playersList;

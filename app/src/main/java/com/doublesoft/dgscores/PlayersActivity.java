@@ -54,8 +54,10 @@ public class PlayersActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                /*
                 String name = ((TextView) view).getText().toString();
                 Toast.makeText(context, "Katso pelaajan " + name + " statistiikka", Toast.LENGTH_SHORT).show();
+                */
             }
         });
 
