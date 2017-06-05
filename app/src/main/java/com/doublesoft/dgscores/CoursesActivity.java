@@ -26,12 +26,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sisältää päävalikon "Courses"-painikkeesta avautuvan ratalistauksen.
+ */
 public class CoursesActivity extends AppCompatActivity {
 
     Context context;
     ArrayList<String[]> courseData;
     CourseAdapter adapter;
 
+    /**
+     * Alustaa ratalistauksen hakemalla tietokantaan lisätyt radat.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +78,10 @@ public class CoursesActivity extends AppCompatActivity {
         registerForContextMenu(listView);
     }
 
+    /**
+     * Hakee radan tiedot (nimi, väylämäärä, par) tietokannasta
+     * @return ratojen tiedot
+     */
     private ArrayList<String[]> getCourseData(){
         DatabaseAdapter db = new DatabaseAdapter(context);
         db.open();
@@ -112,6 +123,12 @@ public class CoursesActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Pitkän painalluksen tapahtumakuuntelija, luo Poista-painikkeen sisältävän valikon.
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -119,6 +136,11 @@ public class CoursesActivity extends AppCompatActivity {
         inflater.inflate(R.menu.context_delete, menu);
     }
 
+    /**
+     * Poista-painikkeen tapahtumakuuntelija, poistaa radan tietokannasta.
+     * @param item
+     * @return bool, onnistuiko poisto
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -137,6 +159,9 @@ public class CoursesActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Alustaa ratarivit "Courses"-painikkeen ratalistauksessa.
+     */
     private class CourseAdapter extends ArrayAdapter<String[]> {
 
         ArrayList<String[]> rows;

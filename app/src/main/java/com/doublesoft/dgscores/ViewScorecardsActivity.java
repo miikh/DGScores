@@ -12,13 +12,18 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by Miika on 16.5.2017.
+ * Sisältää tuloskortin tarkastelun toiminnallisuuden
  */
 public class ViewScorecardsActivity extends ScorecardsActivity {
 
     ArrayList<String> playersList;
     DatabaseAdapter db;
 
+    /**
+     * Alustaa tuloskortin tarkasteluruudun hakemalla tietokannasta kierroksen tiedot
+     * ja luomalla tulosnäkymän
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +51,9 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
 
     }
 
-    // first row of scores
+    /**
+     * Luo tuloskortin otsikkorivin
+     */
     void setHeader(){
         TableLayout layout = (TableLayout) findViewById(R.id.scores_table);
         TableRow header = (TableRow) layout.getChildAt(0);
@@ -62,6 +69,11 @@ public class ViewScorecardsActivity extends ScorecardsActivity {
         }
     }
 
+    /**
+     * Asettaa tuloskortin tulokset
+     * @param courseId radan yksilöivä tunnistetieto
+     * @param gameId pelin yksilöivä tunnistetieto
+     */
     void setScores(long courseId, int gameId){
         // set scores by hole
         Cursor holes = db.getHoles(courseId);

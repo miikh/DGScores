@@ -34,6 +34,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * Sisältää kierroksen pelaamisen toiminnallisuuden
+ */
 public class PlayCourseActivity extends AppCompatActivity {
 
     Context context;
@@ -59,8 +62,12 @@ public class PlayCourseActivity extends AppCompatActivity {
 
     Button finishButton;
     LinearLayout finishLayout;
-    TextView winnerText;
 
+    /**
+     * Alustaa kierroksen pelaamisnäkymän. Jos jatketaan vanhaa peliä, hakee tietokannasta
+     * kesken jääneen kierroksen tiedot.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,10 +193,18 @@ public class PlayCourseActivity extends AppCompatActivity {
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
+        /**
+         * ViewPager-käyttöliittymäelementin tapahtumakuuntelija
+         */
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
+            /**
+             * Muuttaa edellinen- ja seuraava-painikkeiden näkyvyyttä. Asettaa lopeta-painikkeen
+             * näkyväksi jos ollaan radan lopussa.
+             * @param position sijainti
+             */
             @Override
             public void onPageSelected(int position) {
                 if(position == 0) prev.setEnabled(false);
@@ -237,6 +252,9 @@ public class PlayCourseActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Vie kierroksen tuloskortin tietokantaan
+     */
     void insertOrUpdateScorecards(){
         ContentValues[] values = new ContentValues[scorecards.size()];
         int i=0;
@@ -269,6 +287,9 @@ public class PlayCourseActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    /**
+     * Tallentaa kierroksen tiedot sovelluksen sulkeutuessa.
+     */
     @Override
     protected void onStop() {
         SharedPreferences.Editor spEditor = getSharedPreferences("sharedPreferences", MODE_PRIVATE).edit();
@@ -305,6 +326,9 @@ public class PlayCourseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    /**
+     *
+     */
     public static class HoleFragment extends Fragment {
 
         View rootView;

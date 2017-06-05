@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+/**
+ * Sisältää sovelluksen päävalikon
+ */
 public class MainActivity extends AppCompatActivity {
 
     Context context;
@@ -19,6 +22,11 @@ public class MainActivity extends AppCompatActivity {
     final int CONTINUE = 1;
     final int NEW_GAME = 2;
 
+    /**
+     * Alustaa sovelluksen päävalikon ja mahdollistaa kierroksen jatkamisen, jos sovellus on suljettu
+     * kierroksen ollessa kesken
+     * @param savedInstanceState kesken jääneen pelin tiedot
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

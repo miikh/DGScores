@@ -18,6 +18,9 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+/**
+ * Sisältää radan lisäämisnäkymän toiminnallisuudet
+ */
 public class AddCourseActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
     NumberPicker holeNumberPicker;
@@ -29,6 +32,10 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
     LinearLayout.LayoutParams x = new TableLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     int defaultHoleCount = 18;
 
+    /**
+     * Alustaa radan luonti-käyttöliittymän oletuksena 18 väylällä, joissa par 3.
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
@@ -64,6 +71,14 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         updateTotalPar();
     }
 
+    /**
+     * NumberPicker-valitsimen tapahtumakuuntelija.
+     * Valitsimen luvun kasvaessa lisää listan loppuun väylän.
+     * Valitsimen luvun pienentyessä poistaa listan viimeisen väylän.
+     * @param numberPicker tapahtuman lähde
+     * @param oldVal valitsimen arvo tapahtumaa ennen
+     * @param newVal valitsimen arvo tapahtuman jälkeen
+     */
     @Override
     public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
         int holes = holeNumberPicker.getValue();
@@ -83,6 +98,11 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         updateTotalPar();
     }
 
+    /**
+     * Luo väylärivin add_course_hole.xml -tiedoston mukaisilla käyttöliittymäelementeillä
+     * @param holeNumber Väylän numero. Lisätään oletuksena nimen perään
+     * @return Palauttaa väylärivin
+     */
     public View createHoleRow(int holeNumber) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View row = inflater.inflate(R.layout.add_course_hole, null, false);
@@ -117,7 +137,9 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         return row;
     }
 
-    // Loops values from hole row par pickers and sets total course par
+    /**
+     * Käy väylärivien lukuvalitsimien arvot läpi silmukassa ja palauttaa kokonaispar:n.
+     */
     private void updateTotalPar() {
         int holeCount = holeNumberPicker.getValue();
         int _coursePar = 0;
@@ -129,6 +151,10 @@ public class AddCourseActivity extends AppCompatActivity implements NumberPicker
         coursePar.setText(Integer.toString(_coursePar));
     }
 
+    /**
+     * Radan tallennuspainikkeen tapahtumakuuntelija. Käy käyttöliittymässä asetetut
+     * arvot läpi ja tallentaa ne tietokantaan.
+     */
     private void setSaveCourseClick(){
 
         int holeCount = holeNumberPicker.getValue();

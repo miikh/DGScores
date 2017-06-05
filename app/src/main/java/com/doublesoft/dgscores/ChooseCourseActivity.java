@@ -18,6 +18,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * Sisältää radan pelaamisen ratavalinnan toiminnallisuudet
+ */
 public class ChooseCourseActivity extends AppCompatActivity {
 
     Context context;
@@ -28,6 +31,10 @@ public class ChooseCourseActivity extends AppCompatActivity {
     ArrayList<String> players;
     FloatingActionButton addCourse;
 
+    /**
+     * Alustaa radan valintanäkymän hakemalla tietokantaan tallennetut radat
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +83,12 @@ public class ChooseCourseActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -85,6 +98,9 @@ public class ChooseCourseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Alustaa ratarivit radan valintanäkymässä
+     */
     private class CourseCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
 

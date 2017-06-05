@@ -13,9 +13,8 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Created by yone on 14.10.2016.
+ * Sisältää sovelluksen tietokantataulujen määrittelyt ja tietokantametodit.
  */
-
 class DatabaseAdapter {
 
     private SQLiteDatabase db;
@@ -42,6 +41,11 @@ class DatabaseAdapter {
         dbHelper.close();
     }
 
+    /**
+     * Lisää pelaajan tietokantaan
+     * @param name pelaajan nimi
+     * @return bool, onnistuiko lisääminen
+     */
     boolean insertPlayers(ContentValues name){
         if(!checkPlayersDuplicate(name.get("NAME").toString())) {
             db.insert(TABLE_PLAYERS, null, name);
@@ -50,12 +54,23 @@ class DatabaseAdapter {
         else return false;
     }
 
+    /**
+     * Etsii tietokannasta duplikaattipelaajat
+     * @param name pelaajan nimi
+     * @return bool, löytyikö duplikaatteja
+     */
     private boolean checkPlayersDuplicate(String name){
         Cursor c = db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ? AND DELETED = 0", new String[]{name});
         if(c != null && c.getCount() > 0) return true; // duplicate found
         else return false;
     }
 
+    /**
+     * Lisää radan tietokantaan
+     * @param course radan tiedot
+     * @param holes väylien tiedot
+     * @return radan id. -1 jos samanniminen rata on jo olemassa
+     */
     long insertCourse(ContentValues course, ContentValues[] holes){
         if(!checkCourseDuplicate(course.get("NAME").toString())) {
             long id = db.insert(TABLE_COURSES, null, course);
@@ -68,18 +83,31 @@ class DatabaseAdapter {
         else return -1;
     }
 
+    /**
+     * Etsii tietokannasta duplikaattiradat
+     * @param name radan nimi
+     * @return bool, löytyikö duplikaatteja
+     */
     private boolean checkCourseDuplicate(String name){
         Cursor c = db.rawQuery("SELECT * FROM COURSES WHERE NAME = ? AND DELETED = 0", new String[]{name});
         if(c != null && c.getCount() > 0) return true; // duplicate found
         else return false;
     }
 
+    /**
+     * Lisää tuloskortin tietokantaan
+     * @param scorecards tuloskortin tiedot
+     */
     void insertScorecard(ContentValues[] scorecards){
         for(ContentValues scorecard : scorecards){
             db.insert(TABLE_SCORECARDS, null, scorecard);
         }
     }
 
+    /**
+     * Päivittää tietokannassa olevan tuloskortin
+     * @param scorecards tuloskortin tiedot
+     */
     void updateScorecards(ContentValues[] scorecards){
         for(ContentValues scorecard : scorecards){
             db.update(TABLE_SCORECARDS, scorecard, "PLAYER_ID = ? AND HOLE_ID = ? AND GAME_ID = ?",
@@ -87,18 +115,43 @@ class DatabaseAdapter {
         }
     }
 
+    /**
+     * Palauttaa tietokantaan lisätyt, poistamattomat pelaajat (Deleted = 0)
+     * nimen mukaan nousevassa aakkosjärjestyksessä
+     * @return pelaajat
+     */
     public Cursor getPlayers(){
         return db.rawQuery("SELECT * FROM PLAYERS WHERE DELETED = 0 ORDER BY NAME ASC", null);
     }
 
+    /**
+     * Palauttaa tietokantaan lisätyn, poistamattoman pelaajan (Deleted = 0) pelaajan
+     * @param name pelaajan nimi
+     * @return pelaaja
+     */
     Cursor getPlayer(String name) { return db.rawQuery("SELECT * FROM PLAYERS WHERE NAME = ? AND DELETED = 0", new String[] {name}); }
 
+    /**
+     * Palauttaa tietokantaan lisätyn, poistamattoman (Deleted = 0) pelaajan
+     * @param id pelaajan id
+     * @return pelaaja
+     */
     Cursor getPlayer(long id) { return db.rawQuery("SELECT * FROM PLAYERS WHERE _id = ?", new String[] {Long.toString(id)}); }
 
+    /**
+     * Palauttaa tietokantaan lisätyn radan
+     * @param id
+     * @return rata
+     */
     Cursor getCourse(long id){
         return db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{String.valueOf(id)});
     }
 
+    /**
+     *
+     * @param players
+     * @return
+     */
     Cursor getCoursePlayers(ArrayList<String> players) {
         MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "NAME"}, players.size());
         for(String p : players) {
@@ -109,6 +162,11 @@ class DatabaseAdapter {
         return cursor;
     }
 
+    /**
+     * Palauttaa samalla kierroksella pelanneet pelaajat
+     * @param gameId kierroksen yksilöivä tunniste
+     * @return pelaajat
+     */
     Cursor getCoursePlayersByGameId(long gameId) {
         Cursor playerIds = db.rawQuery("SELECT PLAYER_ID FROM SCORECARDS WHERE GAME_ID = ? GROUP BY PLAYER_ID", new String[]{Long.toString(gameId)});
         MatrixCursor players = new MatrixCursor(new String[]{"_id", "NAME"}, playerIds.getCount());
@@ -123,6 +181,11 @@ class DatabaseAdapter {
         return players;
     }
 
+    /**
+     * Palauttaa radan väylät
+     * @param courseName radan nimi
+     * @return rata
+     */
     Cursor getHoles(String courseName){
         Cursor course = getCourse(courseName);
         course.moveToFirst();
@@ -131,14 +194,33 @@ class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ? ORDER BY _id ASC", new String[]{Long.toString(id)});
     }
 
+    /**
+     * Palauttaa radan väylät
+     * @param id radan id
+     * @return rata
+     */
     Cursor getHoles(long id){
         return db.rawQuery("SELECT * FROM HOLES WHERE COURSE_ID = ?", new String[]{Long.toString(id)});
     }
 
+    /**
+     * Palauttaa kaikki poistamattomat (Deleted = 0) radat
+     * @return rata
+     */
     Cursor getCourses() {return db.rawQuery("SELECT * FROM COURSES WHERE DELETED = 0 ORDER BY NAME ASC", null); }
 
+    /**
+     * Palauttaa kaikki poistamattomat (Deleted = 0) radat
+     * @param name radan nimi
+     * @return rata
+     */
     Cursor getCourse(String name) {return db.rawQuery("SELECT * FROM COURSES WHERE NAME = ? AND DELETED = 0", new String[]{name});}
 
+    /**
+     * Palauttaa radan, jolla tunnisteen mukainen kierros on pelattu
+     * @param gameId kierroksen yksilöivä tunniste
+     * @return rata
+     */
     Cursor getCourseByGameId(int gameId){
         Cursor c = db.rawQuery("SELECT HOLE_ID FROM SCORECARDS WHERE GAME_ID = ?", new String[] {String.valueOf(gameId)});
         c.moveToFirst();
@@ -150,6 +232,11 @@ class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{id});
     }
 
+    /**
+     * Palauttaa radan, jolla id:n mukainen väylä on
+     * @param holeId väylän id
+     * @return rata
+     */
     Cursor getCourseByHoleId(long holeId){
         Cursor c = db.rawQuery("SELECT COURSE_ID FROM HOLES WHERE _id = ? GROUP BY COURSE_ID", new String[]{Long.toString(holeId)});
         c.moveToFirst();
@@ -158,14 +245,35 @@ class DatabaseAdapter {
         return db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{id});
     }
 
+    /**
+     * Palauttaa kaikki tuloskortit
+     * @return tuloskortti
+     */
     Cursor getScorecards() { return db.rawQuery("SELECT * FROM SCORECARDS ORDER BY GAME_ID", null); }
 
+    /**
+     * Palauttaa saman kierroksen tuloskorttirivit
+     * @param gameId kierroksen yksilöivä tunniste
+     * @return tuloskortti
+     */
     Cursor getScorecardByGameId(long gameId) { return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ?", new String[]{Long.toString(gameId)}); }
 
+    /**
+     * Palauttaa yhden pelaajan kierroksen tuloskorttirivit
+     * @param gameId kierroksen yksilöivä tunniste
+     * @param playerId pelaajan id
+     * @return tuloskortti
+     */
     Cursor getScorecardsByGameIdAndPlayerId(long gameId, long playerId){
         return db.rawQuery("SELECT * FROM SCORECARDS WHERE GAME_ID = ? AND PLAYER_ID = ? ORDER BY HOLE_ID ASC", new String[]{Long.toString(gameId), Long.toString(playerId)});
     }
 
+    /**
+     * Palauttaa kierroksen tuloskortin luettavassa muodossa
+     * @param gameId kierroksen yksilöivä tunniste
+     * @param playerId pelaajan id
+     * @return tuloskortti
+     */
     Cursor getScorecardsReadable(long gameId, long playerId){
         return db.rawQuery("SELECT Players.Name, Fairway.Name, Throw_Count" +
                 " FROM SCORECARDS" +
@@ -175,6 +283,10 @@ class DatabaseAdapter {
                 " GROUP BY Player_ID", new String[]{Long.toString(gameId), Long.toString(playerId)});
     }
 
+    /**
+     * Palauttaa yksittäiset kierrokset tuloskortti-taulusta
+     * @return kierrosID:t
+     */
     int[] getScorecardGameIds(){
         Cursor cursor = db.rawQuery("SELECT GAME_ID FROM SCORECARDS GROUP BY GAME_ID ORDER BY datetime(DATE) DESC", null);
         cursor.moveToFirst();
@@ -187,6 +299,10 @@ class DatabaseAdapter {
         return ids;
     }
 
+    /**
+     * Palauttaa yksittäiset kierrokset tuloskortti-taulusta
+     * @return kierrosID:t
+     */
     ArrayList<Integer> getScorecardGameIdArrayList(){
         Cursor cursor = db.rawQuery("SELECT GAME_ID FROM SCORECARDS GROUP BY GAME_ID", null);
         cursor.moveToFirst();
@@ -199,6 +315,13 @@ class DatabaseAdapter {
         return ids;
     }
 
+    /**
+     * Palauttaa pelaajan heittolukeman tietyltä kierrokselta
+     * @param playerId pelaajan ID
+     * @param holeId väylän ID
+     * @param gameId kierroksen ID
+     * @return heittolukema
+     */
     int getThrowCount(String playerId, String holeId, String gameId){
         Cursor c = db.rawQuery("SELECT THROW_COUNT FROM SCORECARDS WHERE PLAYER_ID = ? AND HOLE_ID = ? AND GAME_ID = ?", new String[] {playerId, holeId, gameId});
         c.moveToFirst();
@@ -207,10 +330,18 @@ class DatabaseAdapter {
         return throwCount;
     }
 
+    /**
+     * Poistaa peli-id:n osoittaman tuloskortin tietokannasta
+     * @param gameId
+     */
     void deleteByGameId(int gameId){
         db.delete("SCORECARDS", "GAME_ID = ?", new String[] {String.valueOf(gameId)} );
     }
 
+    /**
+     * Poistaa id:n osoittaman radan tietokannasta
+     * @param id radan id
+     */
     void deleteCourse(long id){
         Cursor course = db.rawQuery("SELECT * FROM COURSES WHERE _id = ?", new String[]{String.valueOf(id)});
         course.moveToFirst();
@@ -225,6 +356,10 @@ class DatabaseAdapter {
         db.update(TABLE_COURSES, values, "_id = ?", new String[]{String.valueOf(id)});
     }
 
+    /**
+     * Poistaa id:n osoittaman pelaajan tietokannasta
+     * @param id pelaajan id
+     */
     void deletePlayer(long id){
         Cursor player = db.rawQuery("SELECT * FROM PLAYERS WHERE _id = ?", new String[]{String.valueOf(id)});
         player.moveToFirst();
@@ -236,6 +371,9 @@ class DatabaseAdapter {
         db.update(TABLE_PLAYERS, values, "_id=?", new String[]{String.valueOf(id)});
     }
 
+    /**
+     * Luo tietokantataulut
+     */
     private static class DBOpenHelper extends SQLiteOpenHelper{
 
         private static final String CREATETABLE_COURSES = "CREATE TABLE IF NOT EXISTS COURSES (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
