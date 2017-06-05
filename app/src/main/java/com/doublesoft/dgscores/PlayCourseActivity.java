@@ -173,8 +173,6 @@ public class PlayCourseActivity extends AppCompatActivity {
                 holes.moveToNext();
             }
         }
-        finishLayout = (LinearLayout) findViewById(R.id.finishLayout);
-        winnerText = (TextView) findViewById(R.id.winnerText);
 
         finishButton = (Button) findViewById(R.id.btnFinish);
         finishButton.setOnClickListener(new View.OnClickListener() {
