@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+/**
+ * Sisältää kierroksen aloittamisen, eli pelaajan ja radan valinnan toiminnallisuudet
+ */
 public class StartCourseActivity extends AppCompatActivity {
 
     Context context;
@@ -29,6 +32,10 @@ public class StartCourseActivity extends AppCompatActivity {
     Cursor playersCursor;
     ListView listView;
 
+    /**
+     * Alustaa pelaajien valintanäkymän hakemalla tietokantaan lisätyt pelaajat
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +109,9 @@ public class StartCourseActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * Pelaajan lisäämispainikkeen dialogi
+     */
     private void setAddPlayer(){
         final EditText t = new EditText(context);
         t.setHint("Name");
@@ -139,6 +149,9 @@ public class StartCourseActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Etenemispainikkeen tarkistus, onko riittävästi pelaajia valittu
+     */
     private void setChooseCourse(){
         if(adapter.players.size() > 0){
             Intent i = new Intent(StartCourseActivity.this, ChooseCourseActivity.class);

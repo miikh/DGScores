@@ -24,6 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Sisältää tuloskortin tarkastelun toiminnallisuuden
+ */
 public class ScorecardsActivity extends AppCompatActivity {
 
     Context context;
@@ -36,6 +39,10 @@ public class ScorecardsActivity extends AppCompatActivity {
     ScorecardAdapter adapter;
     int[] gameIds;
 
+    /**
+     * Alustaa tuloskorttilistauksen
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +91,12 @@ public class ScorecardsActivity extends AppCompatActivity {
         registerForContextMenu(listView);
     }
 
+    /**
+     * Avaa pitkän painalluksen konteksti-ikkunan tuloskortin poistamiseen
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -91,6 +104,11 @@ public class ScorecardsActivity extends AppCompatActivity {
         inflater.inflate(R.menu.context_delete, menu);
     }
 
+    /**
+     * Tuloskortin poistaminen
+     * @param item
+     * @return
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -106,6 +124,9 @@ public class ScorecardsActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Tuloskorttirivin ulkoasu ja tiedot
+     */
     private class ScorecardAdapter extends ArrayAdapter<String[]>{
         LayoutInflater inflater;
         ArrayList<String[]> scorecardData;
@@ -147,6 +168,10 @@ public class ScorecardsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Hakee tietokannasta tuloskorttirivit
+     * @return tuloskortti
+     */
     private ArrayList<String[]> getScorecardData(){
 
         db = new DatabaseAdapter(context);

@@ -327,7 +327,7 @@ public class PlayCourseActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Sisältää yksittäisen väylän toiminnallisuudet pelaamisnäkymässä
      */
     public static class HoleFragment extends Fragment {
 
@@ -373,6 +373,13 @@ public class PlayCourseActivity extends AppCompatActivity {
             return fragment;
         }
 
+        /**
+         * Väylän pelaajarivi
+         * @param player pelaaja
+         * @param holeId väylän tunniste
+         * @param playerId pelaajan tunniste
+         * @param hole väylä
+         */
         private void addRow(final String player, final String holeId, final String playerId, final int hole){
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.fragment_layout);
             LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
@@ -432,6 +439,14 @@ public class PlayCourseActivity extends AppCompatActivity {
 
         }
 
+        /**
+         * Kierroksen kokonaistuloksen päivittäminen
+         * @param fragment
+         * @param player
+         * @param score
+         * @param hole
+         * @param throwCount
+         */
         private void updateOverallScores(Fragment fragment, String player, String score, int hole, String throwCount){
             LinearLayout layout = (LinearLayout)((HoleFragment)fragment).rootView.findViewById(R.id.fragment_layout);
             for(int i=0;i<layout.getChildCount();i++){
@@ -474,6 +489,9 @@ public class PlayCourseActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Kierroksen lopun tuloskorttinäkymä
+     */
     public static class ScoreFragment extends Fragment{
         View rootView;
 
@@ -506,6 +524,9 @@ public class PlayCourseActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Kierrostulosten asettaminen
+         */
         private void setScores(){
             holes.moveToFirst();
 
@@ -648,6 +669,9 @@ public class PlayCourseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Kierroksen lopettamisdialogi
+     */
     void showFinishDialog(){
         new AlertDialog.Builder(context)
                 .setIcon(android.R.drawable.ic_dialog_info)

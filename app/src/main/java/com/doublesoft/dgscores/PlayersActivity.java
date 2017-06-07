@@ -25,6 +25,9 @@ import android.widget.Toast;
 
 import java.util.List;
 
+/**
+ * Sisältää pelaajan lisäämisnäkymän toiminnallisuudet
+ */
 public class PlayersActivity extends AppCompatActivity {
 
     Context context;
@@ -32,6 +35,10 @@ public class PlayersActivity extends AppCompatActivity {
     Cursor players;
     SimpleCursorAdapter adapter;
 
+    /**
+     * Alustaa pelaajalistan ja pelaajan lisäyspainikkeen
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +81,9 @@ public class PlayersActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Luo ikkunan uuden pelaajan nimen syöttämiseen.
+     */
     void setAddPlayerButton(){
         final EditText t = new EditText(context);
         t.setHint("Name");
@@ -109,6 +119,12 @@ public class PlayersActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Avaa pitkän painalluksen konteksti-ikkunan pelaajan poistamiseen
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -116,6 +132,11 @@ public class PlayersActivity extends AppCompatActivity {
         inflater.inflate(R.menu.context_delete, menu);
     }
 
+    /**
+     * Pelaajan poistaminen
+     * @param item
+     * @return
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -133,6 +154,9 @@ public class PlayersActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Pelaajarivin ulkoasu ja tiedot
+     */
     private class PlayerAdapter extends SimpleCursorAdapter{
 
         LayoutInflater inflater;
