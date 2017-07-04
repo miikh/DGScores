@@ -180,6 +180,7 @@ public class PlayCourseActivity extends AppCompatActivity {
                 holes.moveToNext();
             }
         }
+        finishLayout = (LinearLayout) findViewById(R.id.finishLayout);
 
         finishButton = (Button) findViewById(R.id.btnFinish);
         finishButton.setOnClickListener(new View.OnClickListener() {
